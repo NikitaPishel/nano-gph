@@ -1,0 +1,17 @@
+# logs
+*.log
+
+# executables
+*.out
+*.o
+
+# editor data
+.vscode/
+*.swp
+
+# main build directory
+/build/
+
+# temporary data
+Temporary/
+temporary/
