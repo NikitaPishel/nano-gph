@@ -5,7 +5,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <memory>
-#include "ngph/texture.h"
+#include <ngph/texture.h>
 
 namespace gph {
 

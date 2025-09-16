@@ -3,9 +3,9 @@
 #include <filesystem>
 
 #include "grid.h"
-#include "ngph/texture.h"
-#include "ngph/canvas.h"
-#include "ngph/iotex.h"
+#include <ngph/texture.h>
+#include <ngph/canvas.h>
+#include <ngph/iotex.h>
 
 using namespace gph;
 

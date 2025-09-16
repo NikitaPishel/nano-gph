@@ -2,7 +2,7 @@
 #define CANVAS_H
 #include <string>
 #include <memory>
-#include "ngph/texture.h"
+#include <ngph/texture.h>
 
 namespace gph {
     class Canvas {
