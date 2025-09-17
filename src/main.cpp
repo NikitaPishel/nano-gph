@@ -10,22 +10,16 @@ int main() {
     Canvas canv(32, 12);
     canv.updateSize();
 
-    Texture texWhite = Texture::Builder(2, 1)
+    Texture texChess = Texture::Builder(4, 2)
         .fillTexture(' ', "white", "red")
-        .build();
-
-    Texture texBlack = Texture::Builder(2, 1)
-        .fillTexture(' ', "white", "black")
+        .setPixel(0, 0, ' ', "white", "black")
+        .setPixel(1, 0, ' ', "white", "black")
+        .setPixel(2, 1, ' ', "white", "black")
+        .setPixel(3, 1, ' ', "white", "black")
         .build();
 
     // build chessboard pattern
-    for (int j = 0; j < canv.getYSize(); j++) {
-        for (int i = 0; i < canv.getXSize() / 2; i++) {
-            bool isWhite = ((i + j) % 2 == 0);
-            const auto& tex = isWhite ? texWhite : texBlack;
-            canv.addTexture(i * 2, j, tex);
-        }
-    }
+    canv.iterateTexture(0, 0, 100, 100, texChess);
 
     constexpr int numRenders = 500;
     double totalTime = 0.0;

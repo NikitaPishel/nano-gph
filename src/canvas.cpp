@@ -94,6 +94,31 @@ namespace gph {
         }
     }
 
+    // add a texture to the canvas
+    void Canvas::iterateTexture(int xPos, int yPos, int xSize, int ySize, const Texture& newTex) {
+        if (xPos < 0 || yPos < 0) {
+            throw std::out_of_range("Texture position out of range (below 0)");
+        }
+
+        if (xPos >= this->getXSize() || yPos >= this->getYSize()) {
+            throw std::out_of_range("Texture position out of range (overflow)");
+        }
+        
+        const Grid& grid = newTex.getGrid();
+
+        // iterate through indexes of a grid and copy pixels with a shift
+        for (int xCount = 0; xCount < xSize; xCount++) {
+            for (int yCount = 0; yCount < ySize; yCount++) {
+                uint32_t xShift = xCount * grid.xSize + xPos;
+                uint32_t yShift = yCount * grid.ySize + yPos;
+
+                if (xShift < this->getXSize() && yShift < this->getYSize()) {
+                    this->addTexture(xShift, yShift, newTex);
+                }
+            }
+        }
+    }
+
     // Render and display current canvas
     void Canvas::render() {
         std::string renderedImage;
