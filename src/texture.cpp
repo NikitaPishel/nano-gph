@@ -91,6 +91,25 @@ namespace gph {
         // pointer for chain method calls
         return *this;
     }
+
+    Texture::Builder& Texture::Builder::addBox(int xPos, int yPos, int xSize, int ySize, char symbol, const std::string& textColor, const std::string& backColor) {
+        const Colors& colors = Colors::getInstance();
+        std::string textColorId = colors.getColorId(textColor);
+        std::string backColorId = colors.getColorId(backColor);
+
+        Grid::Pixel pix;
+        pix.symbol = symbol;
+        pix.textColor = textColorId;
+        pix.backColor = backColorId;
+
+        for (uint32_t xShift = 0; xShift < xSize; xShift++) {
+            for (uint32_t ySift = 0; ySift < ySize; ySift++) {
+                this->pImpl->grid.getPixel(xPos+xShift, yPos+ySift) = pix;
+            }
+        }
+        
+        return *this;
+    }
     
     // change the size of a grid
     Texture::Builder& Texture::Builder::setSize(int xSize, int ySize) {

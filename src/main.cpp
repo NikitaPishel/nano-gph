@@ -19,7 +19,14 @@ int main() {
         .build();
 
     // build chessboard pattern
-    canv.iterateTexture(0, 0, 100, 100, texChess);
+    canv.fillWithTexture(texChess);
+
+    Texture squares = Texture::Builder(10, 5)
+    .fillTexture(' ', "white", "b_yellow")
+    .addBox(2, 1, 6, 3, ' ', "white", "yellow")
+    .build();
+
+    canv.addTexture(2, 1, squares);
 
     constexpr int numRenders = 500;
     double totalTime = 0.0;

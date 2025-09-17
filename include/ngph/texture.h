@@ -35,6 +35,7 @@ namespace gph {
             Builder& fillTexture(char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
             Builder& fillRow(int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
             Builder& fillCol(int xPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
+            Builder& addBox(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
 
             // change size of a texture
             Builder& setSize(int xSize, int ySize);

@@ -107,8 +107,8 @@ namespace gph {
         const Grid& grid = newTex.getGrid();
 
         // iterate through indexes of a grid and copy pixels with a shift
-        for (int xCount = 0; xCount < xSize; xCount++) {
-            for (int yCount = 0; yCount < ySize; yCount++) {
+        for (uint32_t xCount = 0; xCount < xSize; xCount++) {
+            for (uint32_t yCount = 0; yCount < ySize; yCount++) {
                 uint32_t xShift = xCount * grid.xSize + xPos;
                 uint32_t yShift = yCount * grid.ySize + yPos;
 
@@ -117,6 +117,16 @@ namespace gph {
                 }
             }
         }
+    }
+
+    void Canvas::fillWithTexture(const Texture& newTex) {
+        const Grid& grid = newTex.getGrid();
+        
+        // calculate the amount of tiles that will be needed to fill the screen
+        uint32_t xSize = (this->getXSize() + grid.xSize - 1) / grid.xSize;
+        uint32_t ySize = (this->getYSize() + grid.ySize - 1) / grid.ySize;
+
+        this->iterateTexture(0, 0, xSize, ySize, newTex);
     }
 
     // Render and display current canvas

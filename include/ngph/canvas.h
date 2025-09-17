@@ -26,6 +26,7 @@ namespace gph {
         void setPixel(int xPos = 1, int yPos = 1, char symbol = ' ', std::string textColor = "white", std::string backColor = "black");
         void addTexture(int xPos, int yPos, const Texture& newTex);
         void iterateTexture(int xPos, int yPos, int xSize, int ySize, const Texture& newTex);
+        void fillWithTexture(const Texture& newTex);
 
         // render and display data
         void render();
