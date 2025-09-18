@@ -186,6 +186,20 @@ TEST(TextureTest, TestBuildFillCol) {
     }
 }
 
+TEST(TextureTest, addBox) {
+    Texture tex = Texture::Builder(4, 4)
+        .addBox(1, 1, 2, 2, 'a')
+        .build();
+    
+    Grid grid = tex.getGrid();
+
+    EXPECT_EQ(grid.getPixel(1, 1).symbol, 'a');
+    EXPECT_EQ(grid.getPixel(2, 1).symbol, 'a');
+    EXPECT_EQ(grid.getPixel(1, 2).symbol, 'a');
+    EXPECT_EQ(grid.getPixel(2, 2).symbol, 'a');
+    EXPECT_NE(grid.getPixel(3, 3).symbol, 'a');
+}
+
 // test if texture table i/o works correctly with no errors
 TEST(IotexTest, TestTexStore) {
     TexTable table;
@@ -298,7 +312,9 @@ TEST(CanvasTest, TestNormalWork) {
 
     EXPECT_NO_THROW(canv.addTexture(1, 1, tex));
     EXPECT_NO_THROW(canv.setPixel(4, 4, 'a', "red", "blue"));
-    EXPECT_NO_THROW(canv.setSize(6, 6));
     EXPECT_NO_THROW(canv.updateSize());
+    EXPECT_NO_THROW(canv.setSize(8, 8));
+    EXPECT_NO_THROW(canv.iterateTexture(1, 1, 2, 1, tex));
+    EXPECT_NO_THROW(canv.fillWithTexture(tex));
 }
 }
