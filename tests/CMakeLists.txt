@@ -1,7 +1,7 @@
 # Executable for graphics tests
 add_executable(gphTest gphTest.cpp)
 target_include_directories(gphTest PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src
 )
 
 target_link_libraries(gphTest PRIVATE
