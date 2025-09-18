@@ -101,7 +101,7 @@ namespace gph {
     }
 
     void TexTable::saveTable(const std::string& path) {
-        std::ofstream file(path, std::ios::binary);
+        std::ofstream file(path, std::ios::binary | std::ios::trunc);
         if (!file) return;
 
         // serializes current texture map, then writes it into the path
