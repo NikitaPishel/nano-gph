@@ -39,6 +39,9 @@ namespace gph {
             
             // add a single pixel by color Id
             Builder& setPixelById(int xPos, int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
+
+            // add pixel by raw values (color id and relative index)
+            Builder& setPixelByIndex(int index, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
             
             // fill a zone of a texture by color Id
             Builder& fillTextureById(char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");

@@ -111,9 +111,22 @@ namespace gph {
         return *this;
     }
 
-        // all same but with id instead of color name
+    // all same but with id instead of color name
     Texture::Builder& Texture::Builder::setPixelById(int xPos, int yPos, char symbol, const std::string& textColor, const std::string& backColor) {
         this->pImpl->grid.setPixel(xPos, yPos, symbol, textColor, backColor);
+
+        // pointer for chain method calls
+        return *this;
+    }
+
+    // also uses color id
+    Texture::Builder& Texture::Builder::setPixelByIndex(int index, char symbol, const std::string& textColor, const std::string& backColor) {
+        Grid::Pixel pix;
+        pix.symbol = symbol;
+        pix.textColor = textColor;
+        pix.backColor = backColor;
+
+        this->pImpl->grid.getPixelByIndex(index) = pix;
 
         // pointer for chain method calls
         return *this;
