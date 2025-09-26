@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <unordered_map>
 #include "gphUtil.h"
-#include "colors.h"
+#include "ngph/colors.h"
 
 // graphics utility namespace
 namespace gph {
