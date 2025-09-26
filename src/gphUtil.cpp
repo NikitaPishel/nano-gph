@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <unordered_map>
 #include "gphUtil.h"
+#include "colors.h"
 
 // graphics utility namespace
 namespace gph {
@@ -29,7 +30,6 @@ namespace gph {
     // constructor, inits color map
     Colors::Colors()
         : colorMap{
-            {"none", "-1"},
             {"black", "0"},
             {"red", "1"},
             {"green", "2"},
@@ -38,14 +38,14 @@ namespace gph {
             {"magenta", "5"},
             {"cyan", "6"},
             {"white", "7"},
-            {"b_black", "8"},
-            {"b_red", "9"},
-            {"b_green", "10"},
-            {"b_yellow", "11"},
-            {"b_blue", "12"},
-            {"b_magenta", "13"},
-            {"b_cyan", "14"},
-            {"b_white", "15"}
+            {"grey", "8"},
+            {"bRed", "9"},
+            {"bGreen", "10"},
+            {"bYellow", "11"},
+            {"bBlue", "12"},
+            {"bMagenta", "13"},
+            {"bCyan", "14"},
+            {"bWhite", "15"}
         }
         // empty constructor body
     {
@@ -61,8 +61,9 @@ namespace gph {
         }
 
         else {
-            std::cerr << "Error: invalid color" << color << "\n" << std::endl;
-            return 0;
+            // return black color if there's an invalid color
+            std::cerr << "Error: invalid color \'" << color << "\'\n";
+            return "0";
         }
     }
 

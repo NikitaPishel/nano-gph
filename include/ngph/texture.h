@@ -36,6 +36,15 @@ namespace gph {
             Builder& fillRow(int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
             Builder& fillCol(int xPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
             Builder& addBox(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
+            
+            // add a single pixel by color Id
+            Builder& setPixelById(int xPos, int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
+            
+            // fill a zone of a texture by color Id
+            Builder& fillTextureById(char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
+            Builder& fillRowById(int yPos, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
+            Builder& fillColById(int xPos, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
+            Builder& addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
 
             // change size of a texture
             Builder& setSize(int xSize, int ySize);

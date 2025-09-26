@@ -22,7 +22,7 @@ int main() {
     canv.fillWithTexture(texChess);
 
     Texture squares = Texture::Builder(10, 5)
-    .fillTexture(' ', "white", "b_yellow")
+    .fillTexture(' ', "white", "bYellow")
     .addBox(2, 1, 6, 3, ' ', "white", "yellow")
     .build();
 
