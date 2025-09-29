@@ -26,28 +26,30 @@ namespace gph {
             ~Builder();
 
 
+            
             // building methods return Builder& instead of void to make chain method calls
+            
+            // add a single pixel by color Id
+            Builder& setPixelById(int xPos, int yPos, char symbol = ' ', const std::string& textColorId = "white", const std::string& backColorId = "black");
+            
+            // add pixel by raw values (color id and relative index)
+            Builder& setPixelByGridIndex(int index, char symbol = ' ', const std::string& textColorId = "7", const std::string& backColorId = "0");
+            
+            // fill a zone of a texture by color Id
+            Builder& fillTextureById(char symbol = ' ', const std::string& textColorId = "7", const std::string& backColorId = "0");
+            Builder& fillRowById(int yPos, char symbol = ' ', const std::string& textColorId = "7", const std::string& backColorId = "0");
+            Builder& fillColById(int xPos, char symbol = ' ', const std::string& textColorId = "7", const std::string& backColorId = "0");
+            Builder& addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColorId = "7", const std::string& backColorId = "0");
             
             // add a single pixel
             Builder& setPixel(int xPos, int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
-            
-            // fill a zone of a texture
-            Builder& fillTexture(char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
-            Builder& fillRow(int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
-            Builder& fillCol(int xPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
-            Builder& addBox(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
-            
-            // add a single pixel by color Id
-            Builder& setPixelById(int xPos, int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
 
-            // add pixel by raw values (color id and relative index)
-            Builder& setPixelByIndex(int index, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
+            // fill a zone of a texture
+            Builder& fillTexture(char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
+            Builder& fillRow(int yPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
+            Builder& fillCol(int xPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
+            Builder& addBox(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
             
-            // fill a zone of a texture by color Id
-            Builder& fillTextureById(char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
-            Builder& fillRowById(int yPos, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
-            Builder& fillColById(int xPos, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
-            Builder& addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColor = "7", const std::string& backColor = "0");
 
             // change size of a texture
             Builder& setSize(int xSize, int ySize);

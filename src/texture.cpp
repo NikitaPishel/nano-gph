@@ -22,105 +22,15 @@ namespace gph {
         delete this->pImpl;
     }
 
-    // just uses gphUtil to use grid's setPixel
-    Texture::Builder& Texture::Builder::setPixel(int xPos, int yPos, char symbol, const std::string& textColor, const std::string& backColor) {
-        const Colors& colors = Colors::getInstance();
-        std::string textColorId = colors.getColorId(textColor);
-        std::string backColorId = colors.getColorId(backColor);
-
+    // all same but with id instead of color name
+    Texture::Builder& Texture::Builder::setPixelById(int xPos, int yPos, char symbol, const std::string& textColorId, const std::string& backColorId) {
         this->pImpl->grid.setPixel(xPos, yPos, symbol, textColorId, backColorId);
 
-        // pointer for chain method calls
-        return *this;
-    }
-    
-    // fill the whole grid with the same pixel
-    Texture::Builder& Texture::Builder::fillTexture(char symbol, const std::string& textColor, const std::string& backColor) {
-        const Colors& colors = Colors::getInstance();
-        std::string textColorId = colors.getColorId(textColor);
-        std::string backColorId = colors.getColorId(backColor);
-
-        Grid::Pixel pix;
-        pix.symbol = symbol;
-        pix.textColor = textColorId;
-        pix.backColor = backColorId;
-        
-        for (uint32_t i = 0; i < this->pImpl->grid.gridSize; i++) {
-            this->pImpl->grid.getPixelByIndex(i) = pix;
-        }
-
-        // pointer for chain method calls
-        return *this;
-    }
-    
-    // fill a chosen row with the same pixel
-    Texture::Builder& Texture::Builder::fillRow(int yPos, char symbol, const std::string& textColor, const std::string& backColor){
-        const Colors& colors = Colors::getInstance();
-        std::string textColorId = colors.getColorId(textColor);
-        std::string backColorId = colors.getColorId(backColor);
-        
-        
-        Grid::Pixel pix;
-        pix.symbol = symbol;
-        pix.textColor = textColorId;
-        pix.backColor = backColorId;
-        
-        for (uint32_t i = 0; i < this->pImpl->grid.xSize; i++) {
-            this->pImpl->grid.getPixel(i, yPos) = pix;
-        }
-        
-        // pointer for chain method calls
-        return *this;
-    }
-    
-    // fill a chosen column with the same pixel
-    Texture::Builder& Texture::Builder::fillCol(int xPos, char symbol, const std::string& textColor, const std::string& backColor) {
-        const Colors& colors = Colors::getInstance();
-        std::string textColorId = colors.getColorId(textColor);
-        std::string backColorId = colors.getColorId(backColor);
-
-        Grid::Pixel pix;
-        pix.symbol = symbol;
-        pix.textColor = textColorId;
-        pix.backColor = backColorId;
-        
-        for (uint32_t i = 0; i < this->pImpl->grid.ySize; i++) {
-            this->pImpl->grid.getPixel(xPos, i) = pix;
-        }
-
-        // pointer for chain method calls
-        return *this;
-    }
-
-    Texture::Builder& Texture::Builder::addBox(int xPos, int yPos, int xSize, int ySize, char symbol, const std::string& textColor, const std::string& backColor) {
-        const Colors& colors = Colors::getInstance();
-        std::string textColorId = colors.getColorId(textColor);
-        std::string backColorId = colors.getColorId(backColor);
-
-        Grid::Pixel pix;
-        pix.symbol = symbol;
-        pix.textColor = textColorId;
-        pix.backColor = backColorId;
-
-        for (uint32_t xShift = 0; xShift < xSize; xShift++) {
-            for (uint32_t ySift = 0; ySift < ySize; ySift++) {
-                this->pImpl->grid.getPixel(xPos+xShift, yPos+ySift) = pix;
-            }
-        }
-        
-        return *this;
-    }
-
-    // all same but with id instead of color name
-    Texture::Builder& Texture::Builder::setPixelById(int xPos, int yPos, char symbol, const std::string& textColor, const std::string& backColor) {
-        this->pImpl->grid.setPixel(xPos, yPos, symbol, textColor, backColor);
-
-        // pointer for chain method calls
         return *this;
     }
 
     // also uses color id
-    Texture::Builder& Texture::Builder::setPixelByIndex(int index, char symbol, const std::string& textColor, const std::string& backColor) {
+    Texture::Builder& Texture::Builder::setPixelByGridIndex(int index, char symbol, const std::string& textColor, const std::string& backColor) {
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColor;
@@ -133,11 +43,11 @@ namespace gph {
     }
     
     // fill the whole grid with the same pixel (uses color id)
-    Texture::Builder& Texture::Builder::fillTextureById(char symbol, const std::string& textColor, const std::string& backColor) {
+    Texture::Builder& Texture::Builder::fillTextureById(char symbol, const std::string& textColorId, const std::string& backColorId) {
         Grid::Pixel pix;
         pix.symbol = symbol;
-        pix.textColor = textColor;
-        pix.backColor = backColor;
+        pix.textColor = textColorId;
+        pix.backColor = backColorId;
         
         for (uint32_t i = 0; i < this->pImpl->grid.gridSize; i++) {
             this->pImpl->grid.getPixelByIndex(i) = pix;
@@ -190,6 +100,50 @@ namespace gph {
         }
         
         return *this;
+    }
+
+    // just uses gphUtil to use grid's setPixel
+    Texture::Builder& Texture::Builder::setPixel(int xPos, int yPos, char symbol, const std::string& textColorName, const std::string& backColorName) {
+        const Colors& colors = Colors::getInstance();
+        std::string textColorId = colors.getColorId(textColorName);
+        std::string backColorId = colors.getColorId(backColorName);
+
+        return setPixelById(xPos, yPos, symbol, textColorId, backColorId);
+    }
+    
+    // fill the whole grid with the same pixel
+    Texture::Builder& Texture::Builder::fillTexture(char symbol, const std::string& textColorName, const std::string& backColorName) {
+        const Colors& colors = Colors::getInstance();
+        std::string textColorId = colors.getColorId(textColorName);
+        std::string backColorId = colors.getColorId(backColorName);
+
+        return this->fillTextureById(symbol, textColorId, backColorId);
+    }
+    
+    // fill a chosen row with the same pixel
+    Texture::Builder& Texture::Builder::fillRow(int yPos, char symbol, const std::string& textColorName, const std::string& backColorName){
+        const Colors& colors = Colors::getInstance();
+        std::string textColorId = colors.getColorId(textColorName);
+        std::string backColorId = colors.getColorId(backColorName);
+        
+        return fillRowById(yPos, symbol, textColorId, backColorId);
+    }
+    
+    // fill a chosen column with the same pixel
+    Texture::Builder& Texture::Builder::fillCol(int xPos, char symbol, const std::string& textColorName, const std::string& backColorName) {
+        const Colors& colors = Colors::getInstance();
+        std::string textColorId = colors.getColorId(textColorName);
+        std::string backColorId = colors.getColorId(backColorName);
+
+        return fillColById(xPos, symbol, textColorId, backColorId);
+    }
+
+    Texture::Builder& Texture::Builder::addBox(int xPos, int yPos, int xSize, int ySize, char symbol, const std::string& textColorName, const std::string& backColorName) {
+        const Colors& colors = Colors::getInstance();
+        std::string textColorId = colors.getColorId(textColorName);
+        std::string backColorId = colors.getColorId(backColorName);
+
+        return addBoxById(xPos, yPos, xSize, ySize, symbol, textColorId, backColorId);
     }
     
     // change the size of a grid
