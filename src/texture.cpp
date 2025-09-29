@@ -30,11 +30,11 @@ namespace gph {
     }
 
     // also uses color id
-    Texture::Builder& Texture::Builder::setPixelByGridIndex(int index, char symbol, const std::string& textColor, const std::string& backColor) {
+    Texture::Builder& Texture::Builder::setPixelByGridIndex(int index, char symbol, const std::string& textColorId, const std::string& backColorId) {
         Grid::Pixel pix;
         pix.symbol = symbol;
-        pix.textColor = textColor;
-        pix.backColor = backColor;
+        pix.textColor = textColorId;
+        pix.backColor = backColorId;
 
         this->pImpl->grid.getPixelByIndex(index) = pix;
 
@@ -58,11 +58,11 @@ namespace gph {
     }
     
     // fill a chosen row with the same pixel (uses color id)
-    Texture::Builder& Texture::Builder::fillRowById(int yPos, char symbol, const std::string& textColor, const std::string& backColor){
+    Texture::Builder& Texture::Builder::fillRowById(int yPos, char symbol, const std::string& textColorId, const std::string& backColorId){
         Grid::Pixel pix;
         pix.symbol = symbol;
-        pix.textColor = textColor;
-        pix.backColor = backColor;
+        pix.textColor = textColorId;
+        pix.backColor = backColorId;
         
         for (uint32_t i = 0; i < this->pImpl->grid.xSize; i++) {
             this->pImpl->grid.getPixel(i, yPos) = pix;
@@ -73,11 +73,11 @@ namespace gph {
     }
     
     // fill a chosen column with the same pixel (uses color id)
-    Texture::Builder& Texture::Builder::fillColById(int xPos, char symbol, const std::string& textColor, const std::string& backColor) {
+    Texture::Builder& Texture::Builder::fillColById(int xPos, char symbol, const std::string& textColorId, const std::string& backColorId) {
         Grid::Pixel pix;
         pix.symbol = symbol;
-        pix.textColor = textColor;
-        pix.backColor = backColor;
+        pix.textColor = textColorId;
+        pix.backColor = backColorId;
         
         for (uint32_t i = 0; i < this->pImpl->grid.ySize; i++) {
             this->pImpl->grid.getPixel(xPos, i) = pix;
@@ -87,11 +87,11 @@ namespace gph {
         return *this;
     }
 
-    Texture::Builder& Texture::Builder::addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol, const std::string& textColor, const std::string& backColor) {
+    Texture::Builder& Texture::Builder::addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol, const std::string& textColorId, const std::string& backColorId) {
         Grid::Pixel pix;
         pix.symbol = symbol;
-        pix.textColor = textColor;
-        pix.backColor = backColor;
+        pix.textColor = textColorId;
+        pix.backColor = backColorId;
 
         for (uint32_t xShift = 0; xShift < xSize; xShift++) {
             for (uint32_t ySift = 0; ySift < ySize; ySift++) {

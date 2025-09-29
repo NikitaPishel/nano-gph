@@ -42,7 +42,7 @@ namespace gph {
             Builder& addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColorId = "7", const std::string& backColorId = "0");
             
             // add a single pixel
-            Builder& setPixel(int xPos, int yPos, char symbol = ' ', const std::string& textColor = "white", const std::string& backColor = "black");
+            Builder& setPixel(int xPos, int yPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
 
             // fill a zone of a texture
             Builder& fillTexture(char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
