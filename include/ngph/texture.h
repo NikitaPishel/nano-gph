@@ -25,8 +25,10 @@ namespace gph {
             Builder(int xSize = 1, int ySize = 1);
             ~Builder();
 
+            // Size getters
+            int getXSize() const;
+            int getYSize() const;
 
-            
             // building methods return Builder& instead of void to make chain method calls
             
             // add a single pixel by color Id
@@ -49,7 +51,6 @@ namespace gph {
             Builder& fillRow(int yPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
             Builder& fillCol(int xPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
             Builder& addBox(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
-            
 
             // change size of a texture
             Builder& setSize(int xSize, int ySize);

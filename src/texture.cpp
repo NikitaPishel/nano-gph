@@ -22,6 +22,14 @@ namespace gph {
         delete this->pImpl;
     }
 
+    int Texture::Builder::getXSize() const {
+        return this->pImpl->grid.xSize;
+    }
+
+    int Texture::Builder::getYSize() const {
+        return this->pImpl->grid.ySize;
+    }
+
     // all same but with id instead of color name
     Texture::Builder& Texture::Builder::setPixelById(int xPos, int yPos, char symbol, const std::string& textColorId, const std::string& backColorId) {
         this->pImpl->grid.setPixel(xPos, yPos, symbol, textColorId, backColorId);
