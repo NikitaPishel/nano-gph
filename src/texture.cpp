@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <stdexcept>
 #include "gphUtil.h"
 #include "ngph/texture.h"
 #include "grid.h"
@@ -96,6 +97,14 @@ namespace gph {
     }
 
     Texture::Builder& Texture::Builder::addBoxById(int xPos, int yPos, int xSize, int ySize, char symbol, const std::string& textColorId, const std::string& backColorId) {
+        if (xPos < 0 || yPos < 0 || xPos >= this->pImpl->grid.xSize || yPos >= this->pImpl->grid.ySize) {
+            throw std::out_of_range("Box position out of range");
+        }
+
+        if (xSize < 1 || ySize < 1) {
+            throw std::invalid_argument("Invalid box size");
+        }
+
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColorId;

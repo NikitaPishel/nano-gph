@@ -186,7 +186,7 @@ TEST(TextureTest, TestBuildFillCol) {
     }
 }
 
-TEST(TextureTest, addBox) {
+TEST(TextureTest, addBoxAll) {
     Texture tex = Texture::Builder(4, 4)
         .addBox(1, 1, 2, 2, 'a')
         .build();
@@ -198,6 +198,14 @@ TEST(TextureTest, addBox) {
     EXPECT_EQ(grid.getPixel(1, 2).symbol, 'a');
     EXPECT_EQ(grid.getPixel(2, 2).symbol, 'a');
     EXPECT_NE(grid.getPixel(3, 3).symbol, 'a');
+
+    Texture::Builder builder = Texture::Builder(5, 5);
+
+    EXPECT_NO_THROW(builder.addBox(4, 4, 10, 10, 'a', "white" "black"));
+    EXPECT_THROW(builder.addBox(0, -1, 10, 10, 'a', "white" "black"), std::out_of_range);
+    EXPECT_THROW(builder.addBox(-1, 0, 10, 10, 'a', "white" "black"), std::out_of_range);
+    EXPECT_THROW(builder.addBox(0, 0, 0, 10, 'a', "white" "black"), std::invalid_argument);
+    EXPECT_THROW(builder.addBox(0, 0, 10, 0, 'a', "white" "black"), std::invalid_argument);
 }
 
 // test if texture table i/o works correctly with no errors
