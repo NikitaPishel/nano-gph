@@ -27,7 +27,7 @@ target_include_directories(ngph
 add_executable(ngph_demo ./src/main.cpp)
 target_link_libraries(ngph_demo PRIVATE ngph)
 
-# Option to enable tests (ON by default)
+# Option to enable tests (OFF by default)
 option(BUILD_TESTS "Build unit tests" OFF)
 
 if(BUILD_TESTS)

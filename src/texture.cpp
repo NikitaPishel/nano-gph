@@ -101,9 +101,14 @@ namespace gph {
         pix.textColor = textColorId;
         pix.backColor = backColorId;
 
-        for (uint32_t xShift = 0; xShift < xSize; xShift++) {
-            for (uint32_t ySift = 0; ySift < ySize; ySift++) {
-                this->pImpl->grid.getPixel(xPos+xShift, yPos+ySift) = pix;
+        for (int xShift = 0; xShift < xSize; xShift++) {
+            for (int yShift = 0; yShift < ySize; yShift++) {
+                int xPixPos = xPos + xShift;
+                int yPixPos = yPos + yShift;
+                
+                if (xPixPos < this->pImpl->grid.xSize && yPixPos < this->pImpl->grid.ySize) {
+                    this->pImpl->grid.getPixel(xPixPos, yPixPos) = pix;
+                }
             }
         }
         
