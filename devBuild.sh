@@ -11,7 +11,7 @@ AUTO_TEST="${AUTO_TEST:-ON}"
 mkdir -p "$BUILD_DIR"
 
 # Configure CMake and build the project
-cmake -B "$BUILD_DIR" -S "$SOURCE_DIR" -DBUILD_TESTS=$BUILD_TESTS
+cmake -B "$BUILD_DIR" -S "$SOURCE_DIR" -DNGPH_BUILD_TESTS=$BUILD_TESTS
 cmake --build "$BUILD_DIR"
 
 # Run tests automatically if AUTO_TESTS is true
