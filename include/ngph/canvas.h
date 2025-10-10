@@ -20,7 +20,7 @@ namespace gph {
         uint32_t getYSize() const;
         uint32_t getCanvSize() const;
         void setSize(int xSize, int ySize);
-        void updateSize();
+        bool updateSize();
 
         // Adding pixels to the canvas
         void setPixel(int xPos = 1, int yPos = 1, char symbol = ' ', std::string textColor = "white", std::string backColor = "black");
