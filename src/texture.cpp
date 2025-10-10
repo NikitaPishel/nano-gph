@@ -12,7 +12,10 @@ namespace gph {
     public:
         Grid grid;
 
-        Impl(Grid grid): grid(grid) {};
+        // checks if texture owns implementation
+        bool ownedByTex;
+
+        Impl(Grid grid): grid(grid), ownedByTex(false) {};
     };
 
     // Builder constructor; 
@@ -185,8 +188,16 @@ namespace gph {
 
     // Build a Texture
     Texture Texture::Builder::build() {
+        this->pImpl->ownedByTex = true;
+
         Impl* pImpl = this->pImpl;
         this->pImpl = nullptr;
+        
+        return Texture(pImpl);
+    }
+
+    Texture Texture::Builder::create() {
+        Impl* pImpl = this->pImpl;
         
         return Texture(pImpl);
     }
@@ -194,7 +205,9 @@ namespace gph {
     Texture::Texture(Impl* pImpl): pImpl(pImpl) {}
 
     Texture::~Texture() {
-        delete this->pImpl;
+        if (this->pImpl->ownedByTex) {
+            delete this->pImpl;
+        }
     }
     
     int Texture::getXSize() const{

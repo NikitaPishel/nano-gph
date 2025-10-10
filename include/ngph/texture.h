@@ -15,7 +15,7 @@ namespace gph {
     private:
         class Impl;
         const Impl* pImpl;
-        
+
         public:
         class Builder {
         private:
@@ -58,7 +58,11 @@ namespace gph {
             // set a specific grid to a texture
             Builder& setGrid(Grid grid);
 
+            // build texture and transfer ownership to it (temporary builder)
             Texture build();
+
+            // create texture and keep ownership (temporary texture interface)
+            Texture create();
         };
 
         // Constructor
