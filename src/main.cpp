@@ -35,6 +35,9 @@ int main() {
         auto start = chrono::high_resolution_clock::now();
 
         canv.render();
+        if (canv.updateSize()) {
+            canv.render();
+        }
 
         auto end = chrono::high_resolution_clock::now();
         chrono::duration<double> elapsed = end - start;
@@ -44,6 +47,7 @@ int main() {
     double avgFrameTime = totalTime / numRenders;
     double avgFPS = 1.0 / avgFrameTime;
 
+    std::cout << "\033[J\033[H" << std::flush;
     std::cout << "\nAverage FPS over " << numRenders << " renders: " << avgFPS << " FPS\n";
 
     return 0;

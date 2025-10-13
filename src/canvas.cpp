@@ -46,21 +46,22 @@ namespace gph {
     // set the canvas size
     void Canvas::setSize(int xSize, int ySize) {
         this->pImpl->canvas.setGridSize(xSize, ySize);
+        system("clear");
     }
 
     // automatically set the canvas size to the terminal size, if was resized return true
     bool Canvas::updateSize() {
         winsize window = getWinSize();
-        int xSize = window.ws_col;
-        int ySize = window.ws_row;
+        const int& xSize = window.ws_col;
+        const int& ySize = window.ws_row;
 
-        if (xSize != this->getXSize() && ySize != this->getYSize()){
+        if (xSize != this->getXSize() || ySize != this->getYSize()){
             this->setSize(xSize, ySize);
             return true;
         }
         
         return false;
-    }   
+    }
 
     void Canvas::setPixel(int xPos, int yPos, char symbol, std::string textColor, std::string backColor) {
         const Colors& colors = Colors::getInstance();

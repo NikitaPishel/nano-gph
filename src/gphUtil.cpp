@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sys/ioctl.h>
+#include <stdexcept>
 #include <unistd.h>
 #include <unordered_map>
 #include "gphUtil.h"
@@ -10,13 +11,13 @@ namespace gph {
     winsize getWinSize() {
         winsize window;
 
-        window.ws_col = 1;
-        window.ws_row = 1;
-        window.ws_xpixel = 1;
-        window.ws_ypixel = 1;
-
         if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == -1) {
-            std::cerr << "Failed to get window size\n";
+            std::cerr << ("Failed to get window size");
+
+            window.ws_col = 1;
+            window.ws_row = 1;
+            window.ws_xpixel = 1;
+            window.ws_ypixel = 1;
         }
 
         return window;
