@@ -45,12 +45,16 @@ namespace gph {
             
             // add a single pixel
             Builder& setPixel(int xPos, int yPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
-
+            
             // fill a zone of a texture
             Builder& fillTexture(char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
             Builder& fillRow(int yPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
             Builder& fillCol(int xPos, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
             Builder& addBox(int xPos, int yPos, int xSize, int ySize, char symbol = ' ', const std::string& textColorName = "white", const std::string& backColorName = "black");
+
+            // texture addition methods
+            Builder& addTexture(int xPos, int yPos, const Texture& newTex);
+            Builder& fillWithTexture(const Texture& newTex);
 
             // change size of a texture
             Builder& setSize(int xSize, int ySize);

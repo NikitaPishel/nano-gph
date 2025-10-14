@@ -170,6 +170,56 @@ namespace gph {
 
         return addBoxById(xPos, yPos, xSize, ySize, symbol, textColorId, backColorId);
     }
+
+    Texture::Builder& Texture::Builder::addTexture(int xPos, int yPos, const Texture& newTex) {
+        if (xPos < 0 || yPos < 0) {
+            throw std::out_of_range("Texture position out of range (below 0)");
+        }
+
+        if (xPos >= this->getXSize() || yPos >= this->getYSize()) {
+            throw std::out_of_range("Texture position out of range (overflow)");
+        }
+        
+        const Grid& grid = newTex.getGrid();
+
+        // iterate through indexes of a grid and copy pixels with a shift
+        for (int i = 0; i < grid.gridSize; i++) {
+            const Grid::Pixel pix = grid.getPixelByIndex(i);
+            
+            std::pair<uint32_t, uint32_t> pixPos = grid.getPixelPos(i);
+
+            uint32_t xShift = pixPos.first + xPos;
+            uint32_t yShift = pixPos.second + yPos;
+
+            if (xShift < this->getXSize() && yShift < this->getYSize()) {
+                this->pImpl->grid.addPixel(xShift, yShift, pix);
+            }
+        }
+
+        return *this;
+    }
+
+    Texture::Builder& Texture::Builder::fillWithTexture(const Texture& newTex) {
+        const Grid& grid = newTex.getGrid();
+        
+        // calculate the amount of tiles that will be needed to fill the screen
+        uint32_t xSize = (this->getXSize() + grid.xSize - 1) / grid.xSize;
+        uint32_t ySize = (this->getYSize() + grid.ySize - 1) / grid.ySize;
+
+        // iterate through indexes of a grid and copy pixels with a shift
+        for (uint32_t xCount = 0; xCount < xSize; xCount++) {
+            for (uint32_t yCount = 0; yCount < ySize; yCount++) {
+                uint32_t xShift = xCount * grid.xSize;
+                uint32_t yShift = yCount * grid.ySize;
+
+                if (xShift < this->getXSize() && yShift < this->getYSize()) {
+                    this->addTexture(xShift, yShift, newTex);
+                }
+            }
+        }
+
+        return *this;
+    }
     
     // change the size of a grid
     Texture::Builder& Texture::Builder::setSize(int xSize, int ySize) {
