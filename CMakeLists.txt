@@ -28,7 +28,7 @@ add_executable(ngph_demo ./src/main.cpp)
 target_link_libraries(ngph_demo PRIVATE ngph)
 
 # Option to enable tests (change cache to OFF by default)
-set(NGPH_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(NGPH_BUILD_TESTS OFF CACHE BOOL "")
 
 if(NGPH_BUILD_TESTS)
     include(FetchContent)
