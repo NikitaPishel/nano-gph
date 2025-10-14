@@ -15,7 +15,7 @@ namespace gph {
         // checks if texture owns implementation
         bool ownedByTex;
 
-        Impl(Grid grid): grid(grid), ownedByTex(false) {};
+        Impl(Grid grid, bool ownedByTex = false): grid(grid), ownedByTex(ownedByTex) {};
     };
 
     // Builder constructor; 
@@ -203,6 +203,8 @@ namespace gph {
     }
 
     Texture::Texture(Impl* pImpl): pImpl(pImpl) {}
+
+    Texture::Texture(int xSize, int ySize): pImpl(new Impl(Grid(xSize, ySize), true)) {}
 
     Texture::~Texture() {
         if (this->pImpl->ownedByTex) {

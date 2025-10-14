@@ -67,6 +67,7 @@ namespace gph {
 
         // Constructor
         Texture(Impl* pGrid);
+        Texture(int xSize = 1, int ySize = 1);
         ~Texture();
         
         // Get texture dimensions
