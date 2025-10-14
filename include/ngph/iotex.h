@@ -22,9 +22,10 @@ namespace gph {
         TexTable();
 
         // basic texture map operations
-        Texture getTexture(std::string texName);
-        void setTexture(std::string texName, const Texture& texture);
-        void delTexture(std::string texName);
+        Texture getTexture(const std::string& texName) const;
+        const Texture& getTextureRef(const std::string& texName) const;
+        void setTexture(const std::string& texName, const Texture& texture);
+        void delTexture(const std::string& texName);
 
         // Work with binary to save and load textures
         void loadTable(const std::string& path);

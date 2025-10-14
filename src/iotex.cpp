@@ -12,7 +12,7 @@ namespace gph {
     // initialize TexTable
     TexTable::TexTable() {}
 
-    Texture TexTable::getTexture(const std::string texName) {
+    Texture TexTable::getTexture(const std::string& texName) const {
         auto it = this->textures.find(texName);
 
         if (it != this->textures.end()) {
@@ -22,11 +22,21 @@ namespace gph {
         return Texture::Builder().build(); 
     }
 
-    void TexTable::setTexture(const std::string texName, const Texture& texture) {
+    const Texture& TexTable::getTextureRef(const std::string& texName) const {
+        auto it = this->textures.find(texName);
+
+        if (it != this->textures.end()) {
+            return *it->second; 
+        }
+
+        return Texture::Builder().build(); 
+    }
+
+    void TexTable::setTexture(const std::string& texName, const Texture& texture) {
         this->textures.insert({texName, std::make_unique<Texture>(std::move(texture))});
     }
     
-    void TexTable::delTexture(std::string texName) {
+    void TexTable::delTexture(const std::string& texName) {
         this->textures.erase(texName);
     }
 
