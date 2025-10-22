@@ -280,32 +280,31 @@ namespace gph {
 
     // copy constructor
     Texture::Texture(const Texture& other) {
-        this->pImpl = new Impl(other.pImpl->grid);
+        this->pImpl = new Impl(*other.pImpl);
     }
 
     // move constructor
     Texture::Texture(Texture&& other) noexcept {
+        this->pImpl = other.pImpl;
         other.pImpl = nullptr;
     }
-    
+
     // copy assignment
     Texture& Texture::operator=(const Texture& other) {
         if (this != &other) {
             delete this->pImpl;
-            this->pImpl = new Impl(other.pImpl->grid);
+            this->pImpl = new Impl(*other.pImpl);
         }
-
         return *this;
     }
-    
+
     // move assignment
     Texture& Texture::operator=(Texture&& other) noexcept {
         if (this != &other) {
-            delete pImpl; // Free existing resource
-            pImpl = other.pImpl; // Steal the pointer
-            other.pImpl = nullptr; // Nullify the source
+            delete this->pImpl;
+            this->pImpl = other.pImpl;
+            other.pImpl = nullptr;
         }
-
         return *this;
     }
 }
