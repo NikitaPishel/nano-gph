@@ -238,6 +238,7 @@ namespace gph {
 
     // Build a Texture
     Texture Texture::Builder::build() {
+        if (!pImpl) throw std::runtime_error("Builder already used!");
         this->pImpl->ownedByTex = true;
 
         Impl* pImpl = this->pImpl;
@@ -247,8 +248,7 @@ namespace gph {
     }
 
     Texture Texture::Builder::create() {
-        Impl* pImpl = this->pImpl;
-        
+        if (!pImpl) throw std::runtime_error("Builder already used!");
         return Texture(pImpl);
     }
 
@@ -257,7 +257,7 @@ namespace gph {
     Texture::Texture(int xSize, int ySize): pImpl(new Impl(Grid(xSize, ySize), true)) {}
 
     Texture::~Texture() {
-        if (this->pImpl->ownedByTex) {
+        if (pImpl && this->pImpl->ownedByTex) {
             delete this->pImpl;
         }
     }
@@ -278,33 +278,48 @@ namespace gph {
         return GridBuffer(this->pImpl->grid.newBuffer());
     }
 
-    // copy constructor
+    // Copy constructor
     Texture::Texture(const Texture& other) {
-        this->pImpl = new Impl(*other.pImpl);
+        if (other.pImpl) {
+            // copy the Grid but not ownership
+            pImpl = new Impl(other.pImpl->grid, true); 
+        } else {
+            pImpl = nullptr;
+        }
     }
 
-    // move constructor
-    Texture::Texture(Texture&& other) noexcept {
-        this->pImpl = other.pImpl;
+// move constructor
+Texture::Texture(Texture&& other) noexcept {
+    this->pImpl = other.pImpl;
+    other.pImpl = nullptr;
+}
+
+// Copy assignment
+Texture& Texture::operator=(const Texture& other) {
+    if (this != &other) {
+        if (pImpl && pImpl->ownedByTex) {
+            delete pImpl;
+        }
+
+        if (other.pImpl) {
+            pImpl = new Impl(other.pImpl->grid, true);
+        } else {
+            pImpl = nullptr;
+        }
+    }
+    return *this;
+}
+
+// move assignment
+Texture& Texture::operator=(Texture&& other) noexcept {
+    if (this != &other) {
+        if (pImpl && pImpl->ownedByTex) {
+            delete pImpl;
+        }
+        
+        pImpl = other.pImpl;
         other.pImpl = nullptr;
     }
-
-    // copy assignment
-    Texture& Texture::operator=(const Texture& other) {
-        if (this != &other) {
-            delete this->pImpl;
-            this->pImpl = new Impl(*other.pImpl);
-        }
-        return *this;
-    }
-
-    // move assignment
-    Texture& Texture::operator=(Texture&& other) noexcept {
-        if (this != &other) {
-            delete this->pImpl;
-            this->pImpl = other.pImpl;
-            other.pImpl = nullptr;
-        }
-        return *this;
-    }
+    return *this;
+}
 }
