@@ -1,9 +1,13 @@
 # **Nano-Gph**
 
 > [Intro](#intro)
+
 > [Installation](#installation)
+
 > [Manual](#short-manual)
+
 > [Contribution](#contribution-)
+
 > [License](/LICENSE.md)
 
 ---
@@ -39,10 +43,10 @@ FetchContent_MakeAvailable(ngph)
 
 ## **Short Manual**
 ### Headers:
-<ngph/canvas.h>
-<ngph/texture.h>
-<ngph/iotex.h>
-<ngph/colors.h>
+- `<ngph/canvas.h>`
+- `<ngph/texture.h>`
+- `<ngph/iotex.h>`
+- `<ngph/colors.h>`
 
 ![screenshot](./readmeFiles/screenshot-2.png?width=380)
 
@@ -66,11 +70,11 @@ void setSize(int xSize, int ySize);
 bool updateSize();
 ```
 
-`getXSize()` - returns horizontal size of a canvas
-`getYSize()` - returns vetical size of a canvas
-`getCanvSize()` - returns amount of pixels/formatted characters in a canvas
-`setSize(xSize, ySize)` - sets size of a canvas to the provided dimenions
-`updateSize()` - automatically stretches canvas to fill the entire terminal. When canvas was resized, returns true
+- `getXSize()` - returns horizontal size of a canvas
+- `getYSize()` - returns vetical size of a canvas
+- `getCanvSize()` - returns amount of pixels/formatted characters in a canvas
+- `setSize(xSize, ySize)` - sets size of a canvas to the provided dimenions
+- `updateSize()` - automatically stretches canvas to fill the entire terminal. When canvas was resized, returns true
 
 #### editing canvas and displaying image:
 ```cpp
@@ -82,39 +86,39 @@ void fillWithTexture(const Texture& newTex);
 void render();
 ```
 
-`setPixel(...)` - sets a pixel to the provided formatted version: which character is it, its color and background color
-`addTexture(...)` - adds a given texture to the canvas
-`iterateTexture(...)` - iterates texture a few times. For example, if `xSize = 2` and `ySize = 3`, then this method will add 2 columns of textures in 3 rows
-`fillWithTexture(...)` - automatically fills the whole canvas with the same texture
-`render()` - display canvas on a screen
+- `setPixel(...)` - sets a pixel to the provided formatted version: which character is it, its color and background color
+- `addTexture(...)` - adds a given texture to the canvas
+- `iterateTexture(...)` - iterates texture a few times. For example, if `xSize = 2` and `ySize = 3`, then this method will add 2 columns of textures in 3 rows
+- `fillWithTexture(...)` - automatically fills the whole canvas with the same texture
+- `render()` - display canvas on a screen
 
 ###  Texture
 #### Texture::Builder methods
-`Builder(xSize, ySize)` - Constructor: Starts building a texture with the given dimensions.
-`getXSize()` - Returns the current horizontal dimension of the texture being built.
-`getYSize()` - Returns the current vertical dimension of the texture being built.
-`setSize(xSize, ySize)` - Changes the dimensions of the texture being built.
-`setPixel(xPos, yPos, symbol, textColorName, backColorName)` - Sets a single pixel at a specific coordinate using color names.
-`setPixelById(...)` - Same as `setPixel`, but uses color IDs (faster if IDs are known).
-`fillTexture(...)` - Fills the entire texture with the same symbol and colors.
-`fillRow(yPos, ...)` - Fills a single horizontal row (`yPos`) with the specified pixel.
-`fillCol(xPos, ...)` - Fills a single vertical column (`xPos`) with the specified pixel.
-`addBox(xPos, yPos, xSize, ySize, ...)` - Draws a rectangular box starting at `(xPos, yPos)` with the given size and pixel content.
-`addTexture(xPos, yPos, newTex)` - Copies another `Texture` (`newTex`) onto the current texture at `(xPos, yPos)`.
-`fillWithTexture(newTex)` - Tiles the `newTex` across the entire current texture.
-`build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Use this for permanent textures.
-`create()` - Finalizes creation but keeps the `Builder` intact (for temporary `Texture` interfaces).
+- `Builder(xSize, ySize)` - Constructor: Starts building a texture with the given dimensions.
+- `getXSize()` - Returns the current horizontal dimension of the texture being built.
+- `getYSize()` - Returns the current vertical dimension of the texture being built.
+- `setSize(xSize, ySize)` - Changes the dimensions of the texture being built.
+- `setPixel(xPos, yPos, symbol, textColorName, backColorName)` - Sets a single pixel at a specific coordinate using color names.
+- `setPixelById(...)` - Same as `setPixel`, but uses color IDs (faster if IDs are known).
+- `fillTexture(...)` - Fills the entire texture with the same symbol and colors.
+- `fillRow(yPos, ...)` - Fills a single horizontal row (`yPos`) with the specified pixel.
+- `fillCol(xPos, ...)` - Fills a single vertical column (`xPos`) with the specified pixel.
+- `addBox(xPos, yPos, xSize, ySize, ...)` - Draws a rectangular box starting at `(xPos, yPos)` with the given size and pixel content.
+- `addTexture(xPos, yPos, newTex)` - Copies another `Texture` (`newTex`) onto the current texture at `(xPos, yPos)`.
+- `fillWithTexture(newTex)` - Tiles the `newTex` across the entire current texture.
+- `build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Use this for permanent textures.
+- `create()` - Finalizes creation but keeps the `Builder` intact (for temporary `Texture` interfaces).
 
 **All input methods (e. g. fillCol) support ID input**
 
 #### Texture methods
-`Texture(Impl* pGrid)` - Internal constructor used by the `Builder` to transfer ownership of the grid implementation.
-`Texture(int xSize = 1, int ySize = 1)` - Creates a new `Texture` object with the specified dimensions, ready to be used.
-`~Texture()` - Destructor: Cleans up the internal grid implementation if the `Texture` object owns it.
-`getXSize() const` - Returns the horizontal size of the texture.
-`getYSize() const` - Returns the vertical size of the texture.
-`getGrid() const` - Returns a constant reference to the internal `Grid` object (used mainly by the `Canvas` for rendering).
-`newBuffer() const` - Creates and returns a new `GridBuffer` object based on the texture's internal grid.
+- `Texture(Impl* pGrid)` - Internal constructor used by the `Builder` to transfer ownership of the grid implementation.
+- `Texture(int xSize = 1, int ySize = 1)` - Creates a new `Texture` object with the specified dimensions, ready to be used.
+- `~Texture()` - Destructor: Cleans up the internal grid implementation if the `Texture` object owns it.
+- `getXSize() const` - Returns the horizontal size of the texture.
+- `getYSize() const` - Returns the vertical size of the texture.
+- `getGrid() const` - Returns a constant reference to the internal `Grid` object (used mainly by the `Canvas` for rendering).
+- `newBuffer() const` - Creates and returns a new `GridBuffer` object based on the texture's internal grid.
 
 Texture is **muted**, so it can't be edited. You can only read its size, and buffer it into a serialized binary.
 
@@ -136,13 +140,16 @@ void loadTable(const std::string& path);
 void saveTable(const std::string& path);
 ```
 
-`TexTable()` - Constructor: Creates an empty texture table.
-`getTexture(const std::string& texName) const` - Returns a **copy** of the texture associated with `texName`.
-`getTextureRef(const std::string& texName) const` - Returns a **constant reference** to the texture associated with `texName`. Use this to avoid copying.
-`setTexture(const std::string& texName, const Texture& texture)` - Stores a copy of the provided `texture` under the given `texName` (overwrites if the name exists).
-`delTexture(const std::string& texName)` - Removes the texture associated with `texName` from the table.
-`loadTable(const std::string& path)` - Reads a binary file, deserializes the data, and loads the contained textures into the table.
-`saveTable(const std::string& path)` - Serializes the current textures in the table and writes the binary data to the file specified by `path`.
+- `TexTable()` - Constructor: Creates an empty texture table.
+- `getTexture(const std::string& texName) const` - Returns a **copy** of the texture associated with `texName`.
+- `getTextureRef(const std::string& texName) const`-  - Returns a **constant reference** to the texture associated with `texName`. Use this to avoid copying.
+- 
+- `setTexture(const std::string& texName, const Texture& texture)` - Stores a copy of the provided `texture` under the given `texName` (overwrites if the name exists).
+- `delTexture(const std::string& texName)` - Removes the texture associated with `texName` from the table.
+- 
+- `loadTable(const std::string& path)` - Reads a binary file, deserializes the data, and loads the contained textures into the table.
+- 
+- `saveTable(const std::string& path)` - Serializes the current textures in the table and writes the binary data to the file specified by `path`.
 
 ### Colors
 To include the color utility, use header `<ngph/colors>`
@@ -150,8 +157,8 @@ To include the color utility, use header `<ngph/colors>`
 The `Colors` class is implemented as a **Singleton**. It provides the core mechanism for converting user-friendly color names (e.g., `"red"`, `"blue"`) into the internal color identifiers used by the `Canvas` and `Texture` classes. As it is singleton, it is lazy-loaded
 
 #### Methods
-`getInstance() const` - Returns a constant reference to the single, globally accessible instance of the `Colors` class (Singleton access).
-`getColorId(std::string color) const` - Takes a user-friendly color name (e.g., `"red"`, `"white"`) and returns its corresponding internal color ID string used for rendering.
+- `getInstance() const` - Returns a constant reference to the single, globally accessible instance of the `Colors` class (Singleton access).
+- `getColorId(std::string color) const` - Takes a user-friendly color name (e.g., `"red"`, `"white"`) and returns its corresponding internal color ID string used for rendering.
 
 #### Usage: Getting an Instance
 You must access `Colors` through its static factory method `getInstance()`.
