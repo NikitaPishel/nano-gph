@@ -7,13 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Let user choose between static/shared libs (default: shared)
 option(BUILD_SHARED_LIBS "Build shared libraries (.so) instead of static (.a)" ON)
 
-# Create a library of the core app 
+# Create a library of the core app
 add_library(ngph
     ./src/grid.cpp
     ./src/texture.cpp
     ./src/canvas.cpp
     ./src/iotex.cpp
     ./src/gphUtil.cpp
+    ./src/colors.cpp
 )
 
 # Set public include directories for the library
