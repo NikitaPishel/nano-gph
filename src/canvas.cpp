@@ -63,7 +63,7 @@ namespace gph {
         return false;
     }
 
-    void Canvas::setPixel(int xPos, int yPos, char symbol, Rgb textColor, Rgb backColor) {
+    void Canvas::setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor) {
         this->pImpl->canvas.setPixel(xPos, yPos, symbol, textColor, backColor);
     }
 

@@ -1,7 +1,7 @@
-#include <vector>
 #include <cstring>
 #include <stdexcept>
 #include <memory>
+#include <fstream>
 #include "ngph/iotex.h"
 #include "ngph/texture.h"
 #include "grid.h"

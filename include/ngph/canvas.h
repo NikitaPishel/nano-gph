@@ -23,7 +23,7 @@ namespace gph {
         bool updateSize();
 
         // Adding pixels to the canvas
-        void setPixel(int xPos, int yPos, char symbol, Rgb textColor, Rgb backColor);
+        void setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor);
         void addTexture(int xPos, int yPos, const Texture& newTex);
         void iterateTexture(int xPos, int yPos, int xSize, int ySize, const Texture& newTex);
         void fillWithTexture(const Texture& newTex);

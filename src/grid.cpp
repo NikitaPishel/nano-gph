@@ -11,7 +11,7 @@ namespace gph {
     }
 
     // set Pixel instance init values
-    Grid::Pixel::Pixel(): symbol(' '), backColor(Rgb(0, 0, 0)), textColor(Rgb(0, 0, 0)) {
+    Grid::Pixel::Pixel(): symbol(u8' '), backColor(Rgb(0, 0, 0)), textColor(Rgb(0, 0, 0)) {
 
     }
 
@@ -35,7 +35,7 @@ namespace gph {
         renderedImage.append(std::to_string(backColor.b));
         renderedImage.append("m");
 
-        renderedImage.push_back(symbol);
+        renderedImage.push_back(static_cast<char>(symbol));
 
         return renderedImage;
     }
@@ -154,7 +154,7 @@ namespace gph {
     }
 
     // update pixel parameters (or add a pixel)
-    void Grid::setPixel(int xPos, int yPos, char symbol, Rgb textColor, Rgb backColor) {
+    void Grid::setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor) {
         if (xPos < 0 || xPos >= xSize || yPos < 0 || yPos >= ySize) {
             throw std::out_of_range("Pixel index out of range.");
         }
@@ -229,7 +229,7 @@ namespace gph {
 
         for (int y = 0; y < ySize; ++y) {
             for (int x = 0; x < xSize; ++x) {
-                char symbol;
+                char8_t symbol;
                 read(&symbol, sizeof(symbol));
 
                 Rgb textColor;

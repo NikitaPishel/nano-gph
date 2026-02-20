@@ -2,7 +2,7 @@
 #define NSKETCH_GPH_IOTEX_H
 
 #include <string>
-#include <fstream>
+#include <vector>
 #include <unordered_map>
 #include <memory>
 #include <ngph/texture.h>
@@ -16,7 +16,7 @@ namespace gph {
 
         std::vector<char> serialize();
         void deserialize(std::vector<char> buffer);
-        
+
     public:
         // Constructor
         TexTable();

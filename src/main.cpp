@@ -25,7 +25,7 @@ int main() {
             int b = static_cast<int>(200 - factor * 200);
 
             // Apply the color as the background of a space character
-            canv.setPixel(x, y, ' ', Rgb(255, 255, 255), Rgb(r, g, b));
+            canv.setPixel(x, y, u8' ', Rgb(255, 255, 255), Rgb(r, g, b));
         }
     }
 
