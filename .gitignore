@@ -8,6 +8,8 @@
 # editor data
 .vscode/
 *.swp
+*.idx
+.cluster-data/
 
 # main build directory
 /build/
