@@ -11,8 +11,33 @@ namespace gph {
     }
 
     // set Pixel instance init values
-    Grid::Pixel::Pixel(): symbol(' '), backColor("0"), textColor("7") {
+    Grid::Pixel::Pixel(): symbol(' '), backColor(Rgb(0, 0, 0)), textColor(Rgb(0, 0, 0)) {
 
+    }
+
+    std::string Grid::Pixel::toAnsiString() const {
+        std::string renderedImage;
+        renderedImage.reserve(40); // preallocate to avoid reallocs
+
+        renderedImage.append("\033[38;2;");
+        renderedImage.append(std::to_string(textColor.r));
+        renderedImage.append(";");
+        renderedImage.append(std::to_string(textColor.g));
+        renderedImage.append(";");
+        renderedImage.append(std::to_string(textColor.b));
+        renderedImage.append("m");
+
+        renderedImage.append("\033[48;2;");
+        renderedImage.append(std::to_string(backColor.r));
+        renderedImage.append(";");
+        renderedImage.append(std::to_string(backColor.g));
+        renderedImage.append(";");
+        renderedImage.append(std::to_string(backColor.b));
+        renderedImage.append("m");
+
+        renderedImage.push_back(symbol);
+
+        return renderedImage;
     }
 
     // set Grid instance init values
@@ -129,7 +154,7 @@ namespace gph {
     }
 
     // update pixel parameters (or add a pixel)
-    void Grid::setPixel(int xPos, int yPos, char symbol, std::string textColor, std::string backColor) {
+    void Grid::setPixel(int xPos, int yPos, char symbol, Rgb textColor, Rgb backColor) {
         if (xPos < 0 || xPos >= xSize || yPos < 0 || yPos >= ySize) {
             throw std::out_of_range("Pixel index out of range.");
         }
@@ -175,15 +200,8 @@ namespace gph {
             for (int x = 0; x < this->xSize; ++x) {
                 const Grid::Pixel pix = this->getPixel(x, y);
                 append(&pix.symbol, sizeof(pix.symbol));
-
-                // append the size of string as it is non-fixed size
-                uint8_t textLen = pix.textColor.size();
-                append(&textLen, sizeof(textLen));
-                append(pix.textColor.data(), textLen);
-
-                uint8_t backLen = pix.backColor.size();
-                append(&backLen, sizeof(backLen));
-                append(pix.backColor.data(), backLen);
+                append(&pix.textColor, sizeof(Rgb));
+                append(&pix.backColor, sizeof(Rgb));
             }
         }
 
@@ -214,15 +232,11 @@ namespace gph {
                 char symbol;
                 read(&symbol, sizeof(symbol));
 
-                uint8_t textLen;
-                read(&textLen, sizeof(textLen));
-                std::string textColor(textLen, '\0');
-                read(textColor.data(), textLen);
+                Rgb textColor;
+                read(&textColor, sizeof(Rgb));
 
-                uint8_t backLen;
-                read(&backLen, sizeof(backLen));
-                std::string backColor(backLen, '\0');
-                read(backColor.data(), backLen);
+                Rgb backColor;
+                read(&backColor, sizeof(Rgb));
 
                 grid.setPixel(x, y, symbol, textColor, backColor);
             }
