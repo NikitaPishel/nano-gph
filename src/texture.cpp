@@ -1,8 +1,7 @@
 #include <string>
-#include <vector>
 #include <cstdint>
 #include <stdexcept>
-#include "gphUtil.h"
+#include "ngph/colors.h"
 #include "ngph/texture.h"
 #include "grid.h"
 
@@ -18,7 +17,7 @@ namespace gph {
         Impl(Grid grid, bool ownedByTex = false): grid(grid), ownedByTex(ownedByTex) {};
     };
 
-    // Builder constructor; 
+    // Builder constructor;
     Texture::Builder::Builder(int xSize,int ySize): pImpl(new Impl(Grid(xSize, ySize))) {}
 
     // Builder deconstructor
@@ -53,14 +52,14 @@ namespace gph {
         // pointer for chain method calls
         return *this;
     }
-    
+
     // fill the whole grid with the same pixel (uses color id)
     Texture::Builder& Texture::Builder::fillTextureById(char symbol, const std::string& textColorId, const std::string& backColorId) {
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColorId;
         pix.backColor = backColorId;
-        
+
         for (uint32_t i = 0; i < this->pImpl->grid.gridSize; i++) {
             this->pImpl->grid.getPixelByIndex(i) = pix;
         }
@@ -68,29 +67,29 @@ namespace gph {
         // pointer for chain method calls
         return *this;
     }
-    
+
     // fill a chosen row with the same pixel (uses color id)
     Texture::Builder& Texture::Builder::fillRowById(int yPos, char symbol, const std::string& textColorId, const std::string& backColorId){
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColorId;
         pix.backColor = backColorId;
-        
+
         for (uint32_t i = 0; i < this->pImpl->grid.xSize; i++) {
             this->pImpl->grid.getPixel(i, yPos) = pix;
         }
-        
+
         // pointer for chain method calls
         return *this;
     }
-    
+
     // fill a chosen column with the same pixel (uses color id)
     Texture::Builder& Texture::Builder::fillColById(int xPos, char symbol, const std::string& textColorId, const std::string& backColorId) {
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColorId;
         pix.backColor = backColorId;
-        
+
         for (uint32_t i = 0; i < this->pImpl->grid.ySize; i++) {
             this->pImpl->grid.getPixel(xPos, i) = pix;
         }
@@ -117,13 +116,13 @@ namespace gph {
             for (int yShift = 0; yShift < ySize; yShift++) {
                 int xPixPos = xPos + xShift;
                 int yPixPos = yPos + yShift;
-                
+
                 if (xPixPos < this->pImpl->grid.xSize && yPixPos < this->pImpl->grid.ySize) {
                     this->pImpl->grid.getPixel(xPixPos, yPixPos) = pix;
                 }
             }
         }
-        
+
         return *this;
     }
 
@@ -135,7 +134,7 @@ namespace gph {
 
         return setPixelById(xPos, yPos, symbol, textColorId, backColorId);
     }
-    
+
     // fill the whole grid with the same pixel
     Texture::Builder& Texture::Builder::fillTexture(char symbol, const std::string& textColorName, const std::string& backColorName) {
         const Colors& colors = Colors::getInstance();
@@ -144,16 +143,16 @@ namespace gph {
 
         return this->fillTextureById(symbol, textColorId, backColorId);
     }
-    
+
     // fill a chosen row with the same pixel
     Texture::Builder& Texture::Builder::fillRow(int yPos, char symbol, const std::string& textColorName, const std::string& backColorName){
         const Colors& colors = Colors::getInstance();
         std::string textColorId = colors.getColorId(textColorName);
         std::string backColorId = colors.getColorId(backColorName);
-        
+
         return fillRowById(yPos, symbol, textColorId, backColorId);
     }
-    
+
     // fill a chosen column with the same pixel
     Texture::Builder& Texture::Builder::fillCol(int xPos, char symbol, const std::string& textColorName, const std::string& backColorName) {
         const Colors& colors = Colors::getInstance();
@@ -179,13 +178,13 @@ namespace gph {
         if (xPos >= this->getXSize() || yPos >= this->getYSize()) {
             throw std::out_of_range("Texture position out of range (overflow)");
         }
-        
+
         const Grid& grid = newTex.getGrid();
 
         // iterate through indexes of a grid and copy pixels with a shift
         for (int i = 0; i < grid.gridSize; i++) {
             const Grid::Pixel pix = grid.getPixelByIndex(i);
-            
+
             std::pair<uint32_t, uint32_t> pixPos = grid.getPixelPos(i);
 
             uint32_t xShift = pixPos.first + xPos;
@@ -201,7 +200,7 @@ namespace gph {
 
     Texture::Builder& Texture::Builder::fillWithTexture(const Texture& newTex) {
         const Grid& grid = newTex.getGrid();
-        
+
         // calculate the amount of tiles that will be needed to fill the screen
         uint32_t xSize = (this->getXSize() + grid.xSize - 1) / grid.xSize;
         uint32_t ySize = (this->getYSize() + grid.ySize - 1) / grid.ySize;
@@ -220,18 +219,18 @@ namespace gph {
 
         return *this;
     }
-    
+
     // change the size of a grid
     Texture::Builder& Texture::Builder::setSize(int xSize, int ySize) {
         this->pImpl->grid.setGridSize(xSize, ySize);
-        
+
         // pointer for chain method calls
         return *this;
     }
-    
+
     Texture::Builder& Texture::Builder::setGrid(Grid grid) {
         this->pImpl->grid = grid;
-        
+
         // pointer for chain method calls
         return *this;
     }
@@ -243,7 +242,7 @@ namespace gph {
 
         Impl* pImpl = this->pImpl;
         this->pImpl = nullptr;
-        
+
         return Texture(pImpl);
     }
 
@@ -261,19 +260,19 @@ namespace gph {
             delete this->pImpl;
         }
     }
-    
+
     int Texture::getXSize() const{
         return this->pImpl->grid.xSize;
     }
-    
+
     int Texture::getYSize() const{
         return this->pImpl->grid.ySize;
     }
-    
+
     const Grid& Texture::getGrid() const {
         return this->pImpl->grid;
     }
-    
+
     GridBuffer Texture::newBuffer() const {
         return GridBuffer(this->pImpl->grid.newBuffer());
     }
@@ -282,7 +281,7 @@ namespace gph {
     Texture::Texture(const Texture& other) {
         if (other.pImpl) {
             // copy the Grid but not ownership
-            pImpl = new Impl(other.pImpl->grid, true); 
+            pImpl = new Impl(other.pImpl->grid, true);
         } else {
             pImpl = nullptr;
         }
@@ -316,7 +315,7 @@ Texture& Texture::operator=(Texture&& other) noexcept {
         if (pImpl && pImpl->ownedByTex) {
             delete pImpl;
         }
-        
+
         pImpl = other.pImpl;
         other.pImpl = nullptr;
     }

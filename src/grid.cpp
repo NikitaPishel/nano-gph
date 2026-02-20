@@ -1,8 +1,7 @@
 #include <vector>
-#include <iostream>
+#include <stdexcept>
 #include <cstdint>
 #include <cstring>
-#include "gphUtil.h"
 #include "grid.h"
 
 namespace gph {
@@ -21,7 +20,7 @@ namespace gph {
         if (xSize < 1 || ySize < 1) {
             throw std::invalid_argument("Invalid grid size: dimension is below 1");
         }
-        
+
         this->xSize = xSize;
         this->ySize = ySize;
         this->gridSize = xSize * ySize;
@@ -34,7 +33,7 @@ namespace gph {
         if (xSize < 1 || ySize < 1) {
             throw std::invalid_argument("Invalid grid size: dimension is below 1");
         }
-        
+
         // find new matrix size
         uint32_t gridSize = xSize*ySize;
 
@@ -51,14 +50,14 @@ namespace gph {
 
             // calculate pixel x-position based on its old grid index
             uint32_t xPos = oldIndex % this->xSize;
-            
+
             // check if it is out of range
             if (xPos >= xSize) {
                 // calculate new index that will be in range, and find new x-position
                 oldIndex = oldIndex - xPos + this->xSize;
                 xPos = oldIndex % this->xSize;
             }
-            
+
             // calculate pixel y-position based on its old grid index
             uint32_t yPos = (oldIndex - xPos) / this->xSize;
 
@@ -68,7 +67,7 @@ namespace gph {
             // store pixel in projection list
             Pixel pix = this->matrix[oldIndex];
             prjMatrix[i] = {newIndex, pix};
-            
+
             // replace projected pixel from the matrix with blank pixel
             this->matrix[oldIndex] = Pixel();
 
@@ -79,7 +78,7 @@ namespace gph {
         this->xSize = xSize;
         this->ySize = ySize;
         this->gridSize = gridSize;
-        
+
         this->matrix.resize(gridSize);
 
         // project pixels to a new matrix
@@ -106,7 +105,7 @@ namespace gph {
         if (xPos < 0 || xPos >= xSize || yPos < 0 || yPos >= ySize) {
             throw std::out_of_range("Pixel index out of range.");
         }
-        
+
         uint32_t pixIndex = xPos + yPos*xSize;
 
         return this->matrix[pixIndex];
@@ -125,30 +124,30 @@ namespace gph {
         if (index >= this->gridSize) {
             throw std::out_of_range("Pixel index out of range.");
         }
-        
+
         return this->matrix[index];
     }
-    
+
     // update pixel parameters (or add a pixel)
     void Grid::setPixel(int xPos, int yPos, char symbol, std::string textColor, std::string backColor) {
         if (xPos < 0 || xPos >= xSize || yPos < 0 || yPos >= ySize) {
             throw std::out_of_range("Pixel index out of range.");
         }
-        
+
         Pixel& slctPixel = this->getPixel(xPos, yPos);
         slctPixel.symbol = symbol;
         slctPixel.textColor = textColor;
         slctPixel.backColor = backColor;
     }
-    
+
     void Grid::addPixel(int xPos, int yPos, Pixel pix) {
         if (xPos < 0 || xPos >= xSize || yPos < 0 || yPos >= ySize) {
             throw std::out_of_range("Pixel index out of range.");
         }
-        
+
         this->getPixel(xPos, yPos) = pix;
     }
-    
+
     const std::pair<uint32_t, uint32_t> Grid::getPixelPos(int index) const {
         if (index < 0 || index >= this->gridSize) {
             throw std::out_of_range("Pixel index out of range.");
@@ -176,7 +175,7 @@ namespace gph {
             for (int x = 0; x < this->xSize; ++x) {
                 const Grid::Pixel pix = this->getPixel(x, y);
                 append(&pix.symbol, sizeof(pix.symbol));
-                
+
                 // append the size of string as it is non-fixed size
                 uint8_t textLen = pix.textColor.size();
                 append(&textLen, sizeof(textLen));
@@ -187,7 +186,7 @@ namespace gph {
                 append(pix.backColor.data(), backLen);
             }
         }
-        
+
         GridBuffer buffer(binGrid);
 
         return buffer;

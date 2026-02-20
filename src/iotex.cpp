@@ -1,5 +1,4 @@
 #include <vector>
-#include <cstdint>
 #include <cstring>
 #include <stdexcept>
 #include <memory>
@@ -8,7 +7,7 @@
 #include "grid.h"
 
 namespace gph {
-    
+
     // initialize TexTable
     TexTable::TexTable() {}
 
@@ -16,17 +15,17 @@ namespace gph {
         auto it = this->textures.find(texName);
 
         if (it != this->textures.end()) {
-            return *it->second; 
+            return *it->second;
         }
 
-        return Texture::Builder().build(); 
+        return Texture::Builder().build();
     }
 
     const Texture& TexTable::getTextureRef(const std::string& texName) const {
         auto it = this->textures.find(texName);
 
         if (it != this->textures.end()) {
-            return *it->second; 
+            return *it->second;
         }
 
         throw std::runtime_error("Can't reference to a non-existent texture with a name " + texName);
@@ -35,7 +34,7 @@ namespace gph {
     void TexTable::setTexture(const std::string& texName, const Texture& texture) {
         this->textures.insert({texName, std::make_unique<Texture>(std::move(texture))});
     }
-    
+
     void TexTable::delTexture(const std::string& texName) {
         this->textures.erase(texName);
     }
@@ -98,7 +97,7 @@ namespace gph {
             this->setTexture(key, texture);
         }
     }
-    
+
     void TexTable::loadTable(const std::string& path) {
         std::ifstream file(path, std::ios::binary);
         if (!file) return;

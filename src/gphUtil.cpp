@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sys/ioctl.h>
-#include <stdexcept>
 #include <unistd.h>
 #include <unordered_map>
 #include "gphUtil.h"
