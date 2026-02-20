@@ -134,11 +134,11 @@ namespace gph {
         std::string renderedImage;
 
         // reserve space for the string
-        // *40 because renderedPix is at max 40 bytes long
+        // *39 because renderedPix is at max 39 bytes long
         // add y size for each new line ]n
         // add 3 for \033[H at the start of a render (sets cursor to position (0, 0))
         // add 3 for style reset "\033[0m", + 6 in total with \033[H
-        size_t renderSize = this->getCanvSize() * 40 + this->getYSize() + 6;
+        size_t renderSize = this->getCanvSize() * 39 + this->getYSize() + 6;
         renderedImage.reserve(renderSize);
 
         // move cursor to the position (0, 0)

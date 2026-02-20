@@ -17,7 +17,7 @@ namespace gph {
 
     std::string Grid::Pixel::toAnsiString() const {
         std::string renderedImage;
-        renderedImage.reserve(40); // preallocate to avoid reallocs
+        renderedImage.reserve(39); // preallocate to avoid reallocs
 
         renderedImage.append("\033[38;2;");
         renderedImage.append(std::to_string(textColor.r));
