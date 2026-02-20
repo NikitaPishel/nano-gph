@@ -1,3 +1,5 @@
+#include <cstdint>
+#include <string>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <iostream>
@@ -11,8 +13,9 @@ namespace gph {
     class Canvas::Impl {
     public:
         Grid canvas;
+        Grid canvSnap;
 
-        Impl(Grid canvas) : canvas(canvas) {};
+        Impl(Grid canvas) : canvas(canvas), canvSnap(canvas) {};
     };
 
     // Canvas constructor; Makes a unique_ptr of Impl with Grid sized (xSize, ySize)
@@ -25,8 +28,19 @@ namespace gph {
 
     // default destructor
     Canvas::~Canvas() {
+        std::string finalClear;
         // when canvas is destroyed, show cursor again;
-        std::cout << "\033[?25h";
+        finalClear.append("\033[?25h");
+
+        // move cursor for the image to be "on top"
+        finalClear.append("\x1b[");
+        finalClear.append(std::to_string(this->getYSize()+1)); // row (y)
+        finalClear.append(";");
+        finalClear.append(std::to_string(1)); // col (x)
+        finalClear.append("H");
+        finalClear.append("\n");
+
+        std::cout << finalClear;
     };
 
     // get horizontal canvas size
@@ -46,6 +60,7 @@ namespace gph {
     // set the canvas size
     void Canvas::setSize(int xSize, int ySize) {
         this->pImpl->canvas.setGridSize(xSize, ySize);
+        this->pImpl->canvSnap.setGridSize(xSize, ySize);
         system("clear");
     }
 
@@ -147,15 +162,28 @@ namespace gph {
         // iterate through pixels and find their values
         for (int i = 0; i < this->getCanvSize(); i++) {
             const Grid::Pixel& pix = this->pImpl->canvas.getPixelByIndex(i);
+            const Grid::Pixel& snapPix = this->pImpl->canvSnap.getPixelByIndex(i);
 
-            // format pixel and add it to the rendered image
-            renderedImage.append(pix.toAnsiString());
+            // check for diff
+            if (
+                pix.backColor.r != snapPix.backColor.r ||
+                pix.backColor.g != snapPix.backColor.g ||
+                pix.backColor.b != snapPix.backColor.b ||
+                pix.textColor.r != snapPix.textColor.r ||
+                pix.textColor.g != snapPix.textColor.g ||
+                pix.textColor.b != snapPix.textColor.b ||
+                pix.symbol != snapPix.symbol
+            ) {
+                std::pair<uint32_t, uint32_t> pixPos = this->pImpl->canvas.getPixelPos(i);
 
-            std::pair<uint32_t, uint32_t> pixPos = this->pImpl->canvas.getPixelPos(i);
+                renderedImage.append("\x1b[");
+                renderedImage.append(std::to_string(pixPos.second+1)); // row (y)
+                renderedImage.append(";");
+                renderedImage.append(std::to_string(pixPos.first+1)); // col (x)
+                renderedImage.append("H");
 
-            // if it is the last pixel of a row (except for the last row), go to a new line
-            if (pixPos.first == this->getXSize() - 1 && pixPos.second != this->getYSize() - 1) {
-                renderedImage.append("\n");
+                // format pixel and add it to the rendered image
+                renderedImage.append(pix.toAnsiString());
             }
         }
 
@@ -165,5 +193,8 @@ namespace gph {
         // output rendered image to the terminal
         std::cout << renderedImage;
         std::cout.flush();
+
+        // take a snap of the current image
+        this->pImpl->canvSnap = this->pImpl->canvas;
     }
 }

@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <chrono>
 #include "ngph/canvas.h"
