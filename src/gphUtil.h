@@ -1,6 +1,6 @@
 #ifndef CANV_GPH_UTIL
 #define CANV_GPH_UTIL
-#include "ngph/colors.h"
+#include <sys/ioctl.h>
 
 namespace gph {
     winsize getWinSize();
