@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include "ngph/canvas.h"
+#include "ngph/colors.h"
 #include "ngph/texture.h"
 
 using namespace std;
@@ -11,19 +12,19 @@ int main() {
     canv.updateSize();
 
     Texture texChess = Texture::Builder(4, 2)
-        .fillTexture(' ', "white", "red")
-        .setPixel(0, 0, ' ', "white", "black")
-        .setPixel(1, 0, ' ', "white", "black")
-        .setPixel(2, 1, ' ', "white", "black")
-        .setPixel(3, 1, ' ', "white", "black")
+        .fillTexture(' ', Rgb(255, 255, 255), Rgb(255, 0, 0))
+        .setPixel(0, 0, ' ', Rgb(255, 255, 255), Rgb(0, 0, 0))
+        .setPixel(1, 0, ' ', Rgb(255, 255, 255), Rgb(0, 0, 0))
+        .setPixel(2, 1, ' ', Rgb(255, 255, 255), Rgb(0, 0, 0))
+        .setPixel(3, 1, ' ', Rgb(255, 255, 255), Rgb(0, 0, 0))
         .build();
 
     // build chessboard pattern
     canv.fillWithTexture(texChess);
 
     Texture squares = Texture::Builder(10, 5)
-    .fillTexture(' ', "white", "bYellow")
-    .addBox(2, 1, 6, 3, ' ', "white", "yellow")
+    .fillTexture(' ', Rgb(255, 255, 255), Rgb(255, 255, 0))
+    .addBox(2, 1, 6, 3, ' ', Rgb(255, 255, 255), Rgb(200, 200, 0))
     .build();
 
     canv.addTexture(2, 1, squares);
