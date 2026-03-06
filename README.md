@@ -56,7 +56,7 @@ Library features main class `Canvas` that handles input into it via textures, ac
 It uses `(0, 0)` position as origin (top-left corner)
 All method parameters can be found it API (headers)
 
-All interface is encapsulated, so there should not appear any issues with accidental triggering of non-API logic
+All interfaces is encapsulated, so there should not appear any issues with accidental triggering of non-API logic
 
 ### Canvas
 To include canvas, use header `<ngph/canvas>`
@@ -78,7 +78,7 @@ bool updateSize();
 
 #### editing canvas and displaying image:
 ```cpp
-void setPixel(int xPos = 1, int yPos = 1, char symbol = ' ', std::string textColor = "white", std::string backColor = "black");
+void setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor);
 void addTexture(int xPos, int yPos, const Texture& newTex);
 void iterateTexture(int xPos, int yPos, int xSize, int ySize, const Texture& newTex);
 void fillWithTexture(const Texture& newTex);
@@ -98,8 +98,8 @@ void render();
 - `getXSize()` - Returns the current horizontal dimension of the texture being built.
 - `getYSize()` - Returns the current vertical dimension of the texture being built.
 - `setSize(xSize, ySize)` - Changes the dimensions of the texture being built.
-- `setPixel(xPos, yPos, symbol, textColorName, backColorName)` - Sets a single pixel at a specific coordinate using color names.
-- `setPixelById(...)` - Same as `setPixel`, but uses color IDs (faster if IDs are known).
+- `setPixel(xPos, yPos, symbol, textColor, backColor)` - Sets a single pixel at a specific coordinate using `Rgb` colors.
+- `setPixelByGridIndex(index, symbol, textColor, backColor)` - Same as `setPixel`, but uses a raw grid index instead of coordinates.
 - `fillTexture(...)` - Fills the entire texture with the same symbol and colors.
 - `fillRow(yPos, ...)` - Fills a single horizontal row (`yPos`) with the specified pixel.
 - `fillCol(xPos, ...)` - Fills a single vertical column (`xPos`) with the specified pixel.
@@ -108,8 +108,6 @@ void render();
 - `fillWithTexture(newTex)` - Tiles the `newTex` across the entire current texture.
 - `build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Use this for permanent textures.
 - `create()` - Finalizes creation but keeps the `Builder` intact (for temporary `Texture` interfaces).
-
-**All input methods (e. g. fillCol) support ID input**
 
 #### Texture methods
 - `Texture(Impl* pGrid)` - Internal constructor used by the `Builder` to transfer ownership of the grid implementation.
@@ -132,7 +130,7 @@ The `TexTable` class is an utility for managing and persistently storing a colle
 // basic texture map operations
 Texture getTexture(const std::string& texName) const;
 const Texture& getTextureRef(const std::string& texName) const;
-void setTexture(const std::string& texName, const Texture& texture);
+void setTexture(const std::string& texName, Texture texture);
 void delTexture(const std::string& texName);
 
 // Work with binary to save and load textures
@@ -144,7 +142,7 @@ void saveTable(const std::string& path);
 - `getTexture(const std::string& texName) const` - Returns a **copy** of the texture associated with `texName`.
 - `getTextureRef(const std::string& texName) const`-  - Returns a **constant reference** to the texture associated with `texName`. Use this to avoid copying.
 - 
-- `setTexture(const std::string& texName, const Texture& texture)` - Stores a copy of the provided `texture` under the given `texName` (overwrites if the name exists).
+- `setTexture(const std::string& texName, Texture texture)` - Stores the provided `texture` under the given `texName` (overwrites if the name exists).
 - `delTexture(const std::string& texName)` - Removes the texture associated with `texName` from the table.
 - 
 - `loadTable(const std::string& path)` - Reads a binary file, deserializes the data, and loads the contained textures into the table.
@@ -154,28 +152,22 @@ void saveTable(const std::string& path);
 ### Colors
 To include the color utility, use header `<ngph/colors>`
 
-The `Colors` class is implemented as a **Singleton**. It provides the core mechanism for converting user-friendly color names (e.g., `"red"`, `"blue"`) into the internal color identifiers used by the `Canvas` and `Texture` classes. As it is singleton, it is lazy-loaded
+The `Rgb` struct is used to represent colors throughout the library. It is passed directly to pixel-setting methods on both `Canvas` and `Texture::Builder`.
 
-#### Methods
-- `getInstance() const` - Returns a constant reference to the single, globally accessible instance of the `Colors` class (Singleton access).
-- `getColorId(std::string color) const` - Takes a user-friendly color name (e.g., `"red"`, `"white"`) and returns its corresponding internal color ID string used for rendering.
-
-#### Usage: Getting an Instance
-You must access `Colors` through its static factory method `getInstance()`.
-
+#### Rgb
 ```cpp
-#include <ngph/colors.h>
-#include <iostream>
+struct Rgb {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
 
-// Get the singleton instance
-const gph::Colors& colorUtility = gph::Colors::getInstance();
-
-// Use the instance to get an ID
-std::string whiteId = colorUtility.getColorId("white");
-std::cout << "White Color ID: " << whiteId << std::endl;
+    Rgb(uint8_t r=0, uint8_t g=0, uint8_t b=0);
+};
 ```
+
+- `Rgb(r, g, b)` - Constructor: Creates a color from red, green, and blue channel values (0–255).
 
 ---
 
 ## **Contribution**
-**This project is not supported!** Do not expect any contribution being accepted or done to this project consistently. Even though, you are free to use code of this project or use parts of it code for your own needs.
+This project does not accept any contribution.
