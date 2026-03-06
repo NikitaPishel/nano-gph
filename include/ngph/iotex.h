@@ -24,7 +24,7 @@ namespace gph {
         // basic texture map operations
         Texture getTexture(const std::string& texName) const;
         const Texture& getTextureRef(const std::string& texName) const;
-        void setTexture(const std::string& texName, const Texture& texture);
+        void setTexture(const std::string& texName, Texture texture);
         void delTexture(const std::string& texName);
 
         // Work with binary to save and load textures

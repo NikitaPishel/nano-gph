@@ -138,7 +138,7 @@ namespace gph {
 
     // get an access to a pixel (used if you need full control compared to setPixel) or its second version with indirect access
     Grid::Pixel& Grid::getPixelByIndex(int index) {
-        if (index >= this->gridSize) {
+        if (index >= this->gridSize || index < 0) {
             throw std::out_of_range("Pixel index out of range.");
         }
 

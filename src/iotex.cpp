@@ -31,7 +31,7 @@ namespace gph {
         throw std::runtime_error("Can't reference to a non-existent texture with a name " + texName);
     }
 
-    void TexTable::setTexture(const std::string& texName, const Texture& texture) {
+    void TexTable::setTexture(const std::string& texName, Texture texture) {
         this->textures.insert({texName, std::make_unique<Texture>(std::move(texture))});
     }
 
