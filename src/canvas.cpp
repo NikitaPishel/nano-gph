@@ -78,7 +78,7 @@ namespace gph {
         return false;
     }
 
-    void Canvas::setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor) {
+    void Canvas::setPixel(int xPos, int yPos, char32_t symbol, Rgb textColor, Rgb backColor) {
         this->pImpl->canvas.setPixel(xPos, yPos, symbol, textColor, backColor);
     }
 
@@ -149,10 +149,10 @@ namespace gph {
         std::string renderedImage;
 
         // reserve space for the string
-        // *51 because pix.toAnsiString() is at max 39 bytes long, and cursor placement is 12 bytes for 9999 pos max (39+12=51)
+        // *54 because pix.toAnsiString() is at max 42 bytes long, and cursor placement is 12 bytes for 9999 pos max (42+12=54)
         // add y size for each new line ]n
         // add 4 for style reset "\033[0m"
-        size_t renderSize = this->getCanvSize() * 51 + this->getYSize() + 4;
+        size_t renderSize = this->getCanvSize() * 54 + this->getYSize() + 4;
         renderedImage.reserve(renderSize);
 
         // iterate through pixels and find their values

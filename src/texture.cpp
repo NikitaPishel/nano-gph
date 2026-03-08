@@ -32,14 +32,14 @@ namespace gph {
     }
 
     // all same but with id instead of color name
-    Texture::Builder& Texture::Builder::setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor) {
+    Texture::Builder& Texture::Builder::setPixel(int xPos, int yPos, char32_t symbol, Rgb textColor, Rgb backColor) {
         this->pImpl->grid.setPixel(xPos, yPos, symbol, textColor, backColor);
 
         return *this;
     }
 
     // also uses color id
-    Texture::Builder& Texture::Builder::setPixelByGridIndex(int index, char8_t symbol, Rgb textColor, Rgb backColor) {
+    Texture::Builder& Texture::Builder::setPixelByGridIndex(int index, char32_t symbol, Rgb textColor, Rgb backColor) {
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColor;
@@ -52,7 +52,7 @@ namespace gph {
     }
 
     // fill the whole grid with the same pixel (uses color id)
-    Texture::Builder& Texture::Builder::fillTexture(char8_t symbol, Rgb textColor, Rgb backColor) {
+    Texture::Builder& Texture::Builder::fillTexture(char32_t symbol, Rgb textColor, Rgb backColor) {
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColor;
@@ -67,7 +67,7 @@ namespace gph {
     }
 
     // fill a chosen row with the same pixel (uses color id)
-    Texture::Builder& Texture::Builder::fillRow(int yPos, char8_t symbol, Rgb textColor, Rgb backColor){
+    Texture::Builder& Texture::Builder::fillRow(int yPos, char32_t symbol, Rgb textColor, Rgb backColor){
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColor;
@@ -82,7 +82,7 @@ namespace gph {
     }
 
     // fill a chosen column with the same pixel (uses color id)
-    Texture::Builder& Texture::Builder::fillCol(int xPos, char8_t symbol, Rgb textColor, Rgb backColor) {
+    Texture::Builder& Texture::Builder::fillCol(int xPos, char32_t symbol, Rgb textColor, Rgb backColor) {
         Grid::Pixel pix;
         pix.symbol = symbol;
         pix.textColor = textColor;
@@ -96,7 +96,7 @@ namespace gph {
         return *this;
     }
 
-    Texture::Builder& Texture::Builder::addBox(int xPos, int yPos, int xSize, int ySize, char8_t symbol, Rgb textColor, Rgb backColor) {
+    Texture::Builder& Texture::Builder::addBox(int xPos, int yPos, int xSize, int ySize, char32_t symbol, Rgb textColor, Rgb backColor) {
         if (xPos < 0 || yPos < 0 || xPos >= this->pImpl->grid.getXSize() || yPos >= this->pImpl->grid.getYSize()) {
             throw std::out_of_range("Box position out of range");
         }

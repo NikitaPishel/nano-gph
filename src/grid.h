@@ -16,7 +16,7 @@ namespace gph {
     public:
         // nested struct that holds information about characters in the matrix
         struct Pixel {
-            char8_t symbol;
+            char32_t symbol;
             Rgb textColor;
             Rgb backColor; // background color
 
@@ -30,7 +30,7 @@ namespace gph {
         Grid(int xSize = 0, int ySize = 0);
         void setGridSize(int xSize, int ySize);
 
-        void setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor);
+        void setPixel(int xPos, int yPos, char32_t symbol, Rgb textColor, Rgb backColor);
         void addPixel(int xPos, int yPos, Pixel pix);
 
         Pixel& getPixel(int xPos, int yPos);

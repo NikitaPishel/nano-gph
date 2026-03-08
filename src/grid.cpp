@@ -5,19 +5,38 @@
 #include "grid.h"
 
 namespace gph {
+
+    static void appendUtf32AsUtf8(std::string& s, char32_t cp) {
+        if (cp <= 0x7F) {
+            s.push_back(static_cast<char>(cp));
+        } else if (cp <= 0x7FF) {
+            s.push_back(static_cast<char>(0xC0 | (cp >> 6)));
+            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        } else if (cp <= 0xFFFF) {
+            s.push_back(static_cast<char>(0xE0 | (cp >> 12)));
+            s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        } else {
+            s.push_back(static_cast<char>(0xF0 | (cp >> 18)));
+            s.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
+            s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        }
+    }
+
     // Serialized Grid constructor
     GridBuffer::GridBuffer(std::vector<char> buffer): buffer(buffer) {
 
     }
 
     // set Pixel instance init values
-    Grid::Pixel::Pixel(): symbol(u8' '), backColor(Rgb(0, 0, 0)), textColor(Rgb(0, 0, 0)) {
+    Grid::Pixel::Pixel(): symbol(U' '), backColor(Rgb(0, 0, 0)), textColor(Rgb(0, 0, 0)) {
 
     }
 
     std::string Grid::Pixel::toAnsiString() const {
         std::string renderedImage;
-        renderedImage.reserve(39); // preallocate to avoid reallocs
+        renderedImage.reserve(42); // preallocate to avoid reallocs
 
         renderedImage.append("\033[38;2;");
         renderedImage.append(std::to_string(textColor.r));
@@ -35,7 +54,7 @@ namespace gph {
         renderedImage.append(std::to_string(backColor.b));
         renderedImage.append("m");
 
-        renderedImage.push_back(static_cast<char>(symbol));
+        appendUtf32AsUtf8(renderedImage, symbol);
 
         return renderedImage;
     }
@@ -154,7 +173,7 @@ namespace gph {
     }
 
     // update pixel parameters (or add a pixel)
-    void Grid::setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor) {
+    void Grid::setPixel(int xPos, int yPos, char32_t symbol, Rgb textColor, Rgb backColor) {
         if (xPos < 0 || xPos >= xSize || yPos < 0 || yPos >= ySize) {
             throw std::out_of_range("Pixel index out of range.");
         }
@@ -229,7 +248,7 @@ namespace gph {
 
         for (int y = 0; y < ySize; ++y) {
             for (int x = 0; x < xSize; ++x) {
-                char8_t symbol;
+                char32_t symbol;
                 read(&symbol, sizeof(symbol));
 
                 Rgb textColor;

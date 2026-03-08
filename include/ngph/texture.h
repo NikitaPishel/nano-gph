@@ -30,16 +30,16 @@ namespace gph {
             // building methods return Builder& instead of void to make chain method calls
 
             // add a single pixel
-            Builder& setPixel(int xPos, int yPos, char8_t symbol, const Rgb textColor, const Rgb backColor);
+            Builder& setPixel(int xPos, int yPos, char32_t symbol, const Rgb textColor, const Rgb backColor);
 
             // add pixel by raw values (relative index)
-            Builder& setPixelByGridIndex(int index, char8_t symbol, const Rgb textColor, const Rgb backColor);
+            Builder& setPixelByGridIndex(int index, char32_t symbol, const Rgb textColor, const Rgb backColor);
 
             // fill a zone of a texture by color Id
-            Builder& fillTexture(char8_t symbol, const Rgb textColor, const Rgb backColor);
-            Builder& fillRow(int yPos, char8_t symbol, const Rgb textColor, const Rgb backColor);
-            Builder& fillCol(int xPos, char8_t symbol, const Rgb textColor, const Rgb backColor);
-            Builder& addBox(int xPos, int yPos, int xSize, int ySize, char8_t symbol, const Rgb textColor, const Rgb backColor);
+            Builder& fillTexture(char32_t symbol, const Rgb textColor, const Rgb backColor);
+            Builder& fillRow(int yPos, char32_t symbol, const Rgb textColor, const Rgb backColor);
+            Builder& fillCol(int xPos, char32_t symbol, const Rgb textColor, const Rgb backColor);
+            Builder& addBox(int xPos, int yPos, int xSize, int ySize, char32_t symbol, const Rgb textColor, const Rgb backColor);
 
             Builder& addTexture(int xPos, int yPos, const Texture& newTex);
             Builder& fillWithTexture(const Texture& newTex);

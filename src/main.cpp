@@ -26,8 +26,16 @@ int main() {
             int b = static_cast<int>(200 - factor * 200);
 
             // Apply the color as the background of a space character
-            canv.setPixel(x, y, u8' ', Rgb(255, 255, 255), Rgb(r, g, b));
+            canv.setPixel(x, y, U' ', Rgb(255, 255, 255), Rgb(r, g, b));
         }
+    }
+
+    // Scatter emojis across the middle row to demonstrate char32_t support
+    const char32_t emojis[] = {U'🌟', U'🔥', U'💎', U'🚀', U'🎮', U'🌈', U'⚡', U'🎯'};
+    const int emojiCount = sizeof(emojis) / sizeof(emojis[0]);
+    int midY = height / 2;
+    for (int x = 0; x < width; ++x) {
+        canv.setPixel(x, midY, emojis[x % emojiCount], Rgb(255, 255, 255), Rgb(0, 0, 0));
     }
 
     // Benchmarking Render Loop
