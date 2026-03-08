@@ -30,12 +30,16 @@ int main() {
         }
     }
 
-    // Scatter emojis across the middle row to demonstrate char32_t support
+    // Alternate emoji then ASCII char across the middle row
     const char32_t emojis[] = {U'🌟', U'🔥', U'💎', U'🚀', U'🎮', U'🌈', U'⚡', U'🎯'};
+    const char32_t chars[]  = {U'A',  U'B',  U'C',  U'D',  U'E',  U'F',  U'G',  U'H' };
     const int emojiCount = sizeof(emojis) / sizeof(emojis[0]);
     int midY = height / 2;
-    for (int x = 0; x < width; ++x) {
-        canv.setPixel(x, midY, emojis[x % emojiCount], Rgb(255, 255, 255), Rgb(0, 0, 0));
+    for (int x = 0; x < width/2; ++x) {
+        int idx = x % emojiCount;
+        canv.setPixel(x, midY, emojis[idx], Rgb(255, 255, 255), Rgb(0, 0, 0));
+        canv.setPixel(x+2, midY, chars[idx], Rgb(255, 255, 0), Rgb(0, 0, 0));
+        x+=2;
     }
 
     // Benchmarking Render Loop

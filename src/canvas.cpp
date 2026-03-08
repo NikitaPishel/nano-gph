@@ -36,10 +36,13 @@ namespace {
             s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
             s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
         } else {
+            // 4-byte sequence (emoji / wide codepoint); write a null placeholder
+            // after so the terminal knows the next cell is occupied
             s.push_back(static_cast<char>(0xF0 | (cp >> 18)));
             s.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
             s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
             s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+            s.push_back('\0');
         }
     }
 }
