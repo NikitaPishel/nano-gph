@@ -78,7 +78,7 @@ bool updateSize();
 
 #### editing canvas and displaying image:
 ```cpp
-void setPixel(int xPos, int yPos, char8_t symbol, Rgb textColor, Rgb backColor);
+void setPixel(int xPos, int yPos, char32_t symbol, Rgb textColor, Rgb backColor);
 void addTexture(int xPos, int yPos, const Texture& newTex);
 void iterateTexture(int xPos, int yPos, int xSize, int ySize, const Texture& newTex);
 void fillWithTexture(const Texture& newTex);
