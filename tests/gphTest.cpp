@@ -117,6 +117,48 @@ TEST(GridTest, TestGridBuffer) {
 }
 
 
+// Test that an emoji codepoint can be stored and retrieved unchanged
+TEST(GridTest, EmojiStoreRetrieve) {
+    Grid grid(3, 3);
+    Grid::Pixel pix;
+    pix.symbol = U'🔥';
+    pix.textColor = Rgb(255, 255, 255);
+    pix.backColor = Rgb(0, 0, 0);
+
+    grid.addPixel(1, 1, pix);
+    EXPECT_EQ(grid.getPixel(1, 1).symbol, U'🔥');
+}
+
+// Test that toAnsiString() encodes an emoji as valid UTF-8 bytes
+TEST(GridTest, EmojiToAnsiStringUtf8) {
+    Grid::Pixel pix;
+    pix.symbol = U'🔥'; // U+1F525 → F0 9F 94 A5
+    pix.textColor = Rgb(0, 0, 0);
+    pix.backColor = Rgb(0, 0, 0);
+
+    std::string s = pix.toAnsiString();
+
+    // The last 4 bytes of the ANSI string should be the UTF-8 encoding of U+1F525
+    ASSERT_GE(s.size(), 4u);
+    EXPECT_EQ(static_cast<unsigned char>(s[s.size() - 4]), 0xF0);
+    EXPECT_EQ(static_cast<unsigned char>(s[s.size() - 3]), 0x9F);
+    EXPECT_EQ(static_cast<unsigned char>(s[s.size() - 2]), 0x94);
+    EXPECT_EQ(static_cast<unsigned char>(s[s.size() - 1]), 0xA5);
+}
+
+// Test that an emoji survives a buffer pack/unpack round-trip
+TEST(GridTest, EmojiBufferRoundTrip) {
+    Grid grid(2, 2);
+    grid.setPixel(0, 0, U'🌟', Rgb(0, 0, 0), Rgb(0, 0, 0));
+    grid.setPixel(1, 1, U'🚀', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    GridBuffer buffer = grid.newBuffer();
+    Grid unpacked = buffer.unpack();
+
+    EXPECT_EQ(unpacked.getPixel(0, 0).symbol, U'🌟');
+    EXPECT_EQ(unpacked.getPixel(1, 1).symbol, U'🚀');
+}
+
 // test texture get wrappers
 TEST(TextureTest, TestGetSize) {
     Grid grid(2, 2);
