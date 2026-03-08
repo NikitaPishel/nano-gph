@@ -50,6 +50,7 @@ namespace gph {
     public:
         Grid canvas;
         Grid canvSnap;
+        bool dirty = false;
 
         Impl(Grid canvas) : canvas(canvas), canvSnap(canvas) {};
     };
@@ -116,6 +117,7 @@ namespace gph {
 
     void Canvas::setPixel(int xPos, int yPos, char32_t symbol, Rgb textColor, Rgb backColor) {
         this->pImpl->canvas.setPixel(xPos, yPos, symbol, textColor, backColor);
+        this->pImpl->dirty = true;
     }
 
     // add a texture to the canvas
@@ -141,6 +143,7 @@ namespace gph {
 
             if (xShift < this->getXSize() && yShift < this->getYSize()) {
                 this->pImpl->canvas.addPixel(xShift, yShift, pix);
+                this->pImpl->dirty = true;
             }
         }
     }
@@ -182,6 +185,8 @@ namespace gph {
 
     // Render and display current canvas
     void Canvas::render() {
+        if (!this->pImpl->dirty) return;
+
         std::string renderedImage;
 
         // reserve space for the string
@@ -242,5 +247,6 @@ namespace gph {
 
         // take a snap of the current image
         this->pImpl->canvSnap = this->pImpl->canvas;
+        this->pImpl->dirty = false;
     }
 }
