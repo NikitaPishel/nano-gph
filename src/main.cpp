@@ -33,7 +33,7 @@ int main() {
 
     // Overlay a text label using addText
     Texture labelTex = Texture::Builder(22, 3)
-        .addText(0, 0, U"Hello, World!\n\tTabbed line\nRow 3 here", Rgb(255, 255, 0), Rgb(0, 0, 80))
+        .addText(0, 0, U"Hello, World!\n\tTabbed line\n🚀Row 3 here", Rgb(255, 255, 0), Rgb(0, 0, 80))
         .build();
     canv.addTexture(1, 1, labelTex);
 

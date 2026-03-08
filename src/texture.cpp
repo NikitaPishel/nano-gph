@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include "ngph/texture.h"
 #include "grid.h"
+#include "gphUtil.h"
 
 namespace gph {
 
@@ -145,8 +146,23 @@ namespace gph {
             } else if (cp == U'\r') {
                 curX = 0;
             } else {
+                bool wide = isWideChar(cp);
+
+                // wrap a wide char that would start at the last column to the next row
+                if (wide && curX + 1 >= xSize) {
+                    curX = 0;
+                    curY++;
+                    if (curY >= ySize) break;
+                }
+
                 this->pImpl->grid.setPixel(curX, curY, cp, textColor, backColor);
-                curX++;
+
+                // blank the right-half cell so it never shows stale content
+                if (wide && curX + 1 < xSize) {
+                    this->pImpl->grid.setPixel(curX + 1, curY, U' ', backColor, backColor);
+                }
+
+                curX += wide ? 2 : 1;
                 if (curX >= xSize) {
                     curX = 0;
                     curY++;
