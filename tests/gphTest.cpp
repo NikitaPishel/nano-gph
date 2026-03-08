@@ -378,17 +378,19 @@ TEST(TextureTest, AddTextWithOffset) {
     EXPECT_EQ(grid.getPixel(0, 0).symbol, U' '); // untouched
 }
 
-// addText: Unicode codepoints (emoji) are stored correctly
+// addText: Unicode codepoints (emoji) are stored correctly and advance by 2
 TEST(TextureTest, AddTextUnicode) {
-    Texture tex = Texture::Builder(5, 2)
+    // texture is 6 wide: H(0) i(1) 🔥(2) placeholder(3) !(4)
+    Texture tex = Texture::Builder(6, 2)
         .addText(0, 0, U"Hi\U0001F525!", Rgb(255,255,255), Rgb(0,0,0))
         .build();
 
     Grid grid = tex.getGrid();
     EXPECT_EQ(grid.getPixel(0, 0).symbol, U'H');
     EXPECT_EQ(grid.getPixel(1, 0).symbol, U'i');
-    EXPECT_EQ(grid.getPixel(2, 0).symbol, U'\U0001F525'); // 🔥
-    EXPECT_EQ(grid.getPixel(3, 0).symbol, U'!');
+    EXPECT_EQ(grid.getPixel(2, 0).symbol, U'\U0001F525'); // 🔥 — occupies cells 2 and 3
+    EXPECT_EQ(grid.getPixel(3, 0).symbol, U' ');          // right-half blank placeholder
+    EXPECT_EQ(grid.getPixel(4, 0).symbol, U'!');
 }
 
 // test if texture table i/o works correctly with no errors
