@@ -250,6 +250,147 @@ TEST(TextureTest, addBoxAll) {
     EXPECT_THROW(builder.addBox(0, 0, 10, 0, 'a', Rgb(255,255,255), Rgb(0,0,0)), std::invalid_argument);
 }
 
+// getSymbol returns the correct codepoint
+TEST(TextureTest, GetSymbol) {
+    Texture tex = Texture::Builder(3, 3)
+        .setPixel(1, 2, U'Z', Rgb(0,0,0), Rgb(0,0,0))
+        .build();
+
+    EXPECT_EQ(tex.getSymbol(1, 2), U'Z');
+    EXPECT_EQ(tex.getSymbol(0, 0), U' '); // default pixel
+}
+
+// getFgColor returns the correct foreground colour
+TEST(TextureTest, GetFgColor) {
+    Texture tex = Texture::Builder(3, 3)
+        .setPixel(0, 0, U'A', Rgb(10, 20, 30), Rgb(0,0,0))
+        .build();
+
+    Rgb fg = tex.getFgColor(0, 0);
+    EXPECT_EQ(fg.r, 10);
+    EXPECT_EQ(fg.g, 20);
+    EXPECT_EQ(fg.b, 30);
+}
+
+// getBgColor returns the correct background colour
+TEST(TextureTest, GetBgColor) {
+    Texture tex = Texture::Builder(3, 3)
+        .setPixel(2, 1, U'B', Rgb(0,0,0), Rgb(50, 100, 150))
+        .build();
+
+    Rgb bg = tex.getBgColor(2, 1);
+    EXPECT_EQ(bg.r, 50);
+    EXPECT_EQ(bg.g, 100);
+    EXPECT_EQ(bg.b, 150);
+}
+
+// pixel getters throw out_of_range on invalid coordinates
+TEST(TextureTest, PixelGettersOutOfRange) {
+    Texture tex = Texture::Builder(3, 3).build();
+
+    EXPECT_THROW(tex.getSymbol(3, 0),  std::out_of_range);
+    EXPECT_THROW(tex.getSymbol(0, 3),  std::out_of_range);
+    EXPECT_THROW(tex.getSymbol(-1, 0), std::out_of_range);
+    EXPECT_THROW(tex.getFgColor(3, 0), std::out_of_range);
+    EXPECT_THROW(tex.getBgColor(0, 3), std::out_of_range);
+}
+
+// addText: basic left-to-right placement
+TEST(TextureTest, AddTextBasic) {
+    Texture tex = Texture::Builder(5, 2)
+        .addText(0, 0, U"Hello", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    Grid grid = tex.getGrid();
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U'H');
+    EXPECT_EQ(grid.getPixel(1, 0).symbol, U'e');
+    EXPECT_EQ(grid.getPixel(2, 0).symbol, U'l');
+    EXPECT_EQ(grid.getPixel(3, 0).symbol, U'l');
+    EXPECT_EQ(grid.getPixel(4, 0).symbol, U'o');
+}
+
+// addText: \n moves cursor to start of next row
+TEST(TextureTest, AddTextNewline) {
+    Texture tex = Texture::Builder(5, 3)
+        .addText(0, 0, U"Hi\nBye", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    Grid grid = tex.getGrid();
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U'H');
+    EXPECT_EQ(grid.getPixel(1, 0).symbol, U'i');
+    EXPECT_EQ(grid.getPixel(0, 1).symbol, U'B');
+    EXPECT_EQ(grid.getPixel(1, 1).symbol, U'y');
+    EXPECT_EQ(grid.getPixel(2, 1).symbol, U'e');
+}
+
+// addText: \t advances to the next multiple-of-4 tab stop
+TEST(TextureTest, AddTextTab) {
+    // tab at x=0 → next stop = 4
+    Texture tex = Texture::Builder(10, 2)
+        .addText(0, 0, U"\tA", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+    EXPECT_EQ(tex.getGrid().getPixel(4, 0).symbol, U'A');
+
+    // tab at x=2 → next stop = 4
+    Texture tex2 = Texture::Builder(10, 2)
+        .addText(0, 0, U"AB\tC", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+    EXPECT_EQ(tex2.getGrid().getPixel(4, 0).symbol, U'C');
+}
+
+// addText: chars wrap to next row when width is exceeded
+TEST(TextureTest, AddTextWrapOnOverflow) {
+    // "ABCDE" in a 3-wide texture: row0 = ABC, row1 = DE
+    Texture tex = Texture::Builder(3, 2)
+        .addText(0, 0, U"ABCDE", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    Grid grid = tex.getGrid();
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U'A');
+    EXPECT_EQ(grid.getPixel(2, 0).symbol, U'C');
+    EXPECT_EQ(grid.getPixel(0, 1).symbol, U'D');
+    EXPECT_EQ(grid.getPixel(1, 1).symbol, U'E');
+}
+
+// addText: stops once the texture is full, without writing out-of-bounds
+TEST(TextureTest, AddTextStopsWhenFull) {
+    // 3x2 texture has 6 cells; "ABCDEFG" fills all 6 then stops before G
+    Texture tex = Texture::Builder(3, 2)
+        .addText(0, 0, U"ABCDEFG", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    Grid grid = tex.getGrid();
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U'A');
+    EXPECT_EQ(grid.getPixel(2, 1).symbol, U'F');
+    // G is beyond capacity — nothing after F should be set
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U'A'); // sanity
+}
+
+// addText: starting at a non-zero offset
+TEST(TextureTest, AddTextWithOffset) {
+    Texture tex = Texture::Builder(5, 3)
+        .addText(2, 1, U"XY", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    Grid grid = tex.getGrid();
+    EXPECT_EQ(grid.getPixel(2, 1).symbol, U'X');
+    EXPECT_EQ(grid.getPixel(3, 1).symbol, U'Y');
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U' '); // untouched
+}
+
+// addText: Unicode codepoints (emoji) are stored correctly
+TEST(TextureTest, AddTextUnicode) {
+    Texture tex = Texture::Builder(5, 2)
+        .addText(0, 0, U"Hi\U0001F525!", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    Grid grid = tex.getGrid();
+    EXPECT_EQ(grid.getPixel(0, 0).symbol, U'H');
+    EXPECT_EQ(grid.getPixel(1, 0).symbol, U'i');
+    EXPECT_EQ(grid.getPixel(2, 0).symbol, U'\U0001F525'); // 🔥
+    EXPECT_EQ(grid.getPixel(3, 0).symbol, U'!');
+}
+
 // test if texture table i/o works correctly with no errors
 TEST(IotexTest, TestTexStore) {
     TexTable table;

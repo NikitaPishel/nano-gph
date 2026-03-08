@@ -3,6 +3,7 @@
 #include <chrono>
 #include "ngph/canvas.h"
 #include "ngph/colors.h"
+#include "ngph/texture.h"
 
 using namespace std;
 using namespace gph;
@@ -29,6 +30,12 @@ int main() {
             canv.setPixel(x, y, U' ', Rgb(255, 255, 255), Rgb(r, g, b));
         }
     }
+
+    // Overlay a text label using addText
+    Texture labelTex = Texture::Builder(22, 3)
+        .addText(0, 0, U"Hello, World!\n\tTabbed line\nRow 3 here", Rgb(255, 255, 0), Rgb(0, 0, 80))
+        .build();
+    canv.addTexture(1, 1, labelTex);
 
     // Alternate emoji then ASCII char across the middle row
     const char32_t emojis[] = {U'🌟', U'🔥', U'💎', U'🚀', U'🎮', U'🌈', U'⚡', U'🎯'};
