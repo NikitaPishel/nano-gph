@@ -33,7 +33,7 @@ cmake:
 FetchContent_Declare(
     ngph
     GIT_REPOSITORY https://github.com/NikitaPishel/nano-gph
-    GIT_TAG master
+    GIT_TAG <version>
 )
 
 FetchContent_MakeAvailable(ngph)
