@@ -2,6 +2,7 @@
 #define CANVAS_TEXTURE_H
 
 #include <ngph/colors.h>
+#include <string>
 
 namespace gph {
     class GridBuffer;
@@ -41,6 +42,8 @@ namespace gph {
             Builder& fillCol(int xPos, char32_t symbol, const Rgb textColor, const Rgb backColor);
             Builder& addBox(int xPos, int yPos, int xSize, int ySize, char32_t symbol, const Rgb textColor, const Rgb backColor);
 
+            Builder& addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor);
+
             Builder& addTexture(int xPos, int yPos, const Texture& newTex);
             Builder& fillWithTexture(const Texture& newTex);
 
@@ -65,6 +68,11 @@ namespace gph {
         // Get texture dimensions
         int getXSize() const;
         int getYSize() const;
+
+        // Pixel getters
+        char32_t getSymbol(int xPos, int yPos) const;
+        Rgb getFgColor(int xPos, int yPos) const;
+        Rgb getBgColor(int xPos, int yPos) const;
 
         // getter method for canvas function
         const Grid& getGrid() const;

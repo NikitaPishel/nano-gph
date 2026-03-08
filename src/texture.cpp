@@ -124,6 +124,39 @@ namespace gph {
         return *this;
     }
 
+    Texture::Builder& Texture::Builder::addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor) {
+        int xSize = this->getXSize();
+        int ySize = this->getYSize();
+        int curX = xPos;
+        int curY = yPos;
+
+        for (char32_t cp : text) {
+            if (curY >= ySize) break;
+
+            if (cp == U'\n') {
+                curX = 0;
+                curY++;
+            } else if (cp == U'\t') {
+                curX = (curX / 4 + 1) * 4;
+                if (curX >= xSize) {
+                    curX = 0;
+                    curY++;
+                }
+            } else if (cp == U'\r') {
+                curX = 0;
+            } else {
+                this->pImpl->grid.setPixel(curX, curY, cp, textColor, backColor);
+                curX++;
+                if (curX >= xSize) {
+                    curX = 0;
+                    curY++;
+                }
+            }
+        }
+
+        return *this;
+    }
+
     Texture::Builder& Texture::Builder::addTexture(int xPos, int yPos, const Texture& newTex) {
         if (xPos < 0 || yPos < 0) {
             throw std::out_of_range("Texture position out of range (below 0)");
@@ -221,6 +254,18 @@ namespace gph {
 
     int Texture::getYSize() const{
         return this->pImpl->grid.getYSize();
+    }
+
+    char32_t Texture::getSymbol(int xPos, int yPos) const {
+        return this->pImpl->grid.getPixel(xPos, yPos).symbol;
+    }
+
+    Rgb Texture::getFgColor(int xPos, int yPos) const {
+        return this->pImpl->grid.getPixel(xPos, yPos).textColor;
+    }
+
+    Rgb Texture::getBgColor(int xPos, int yPos) const {
+        return this->pImpl->grid.getPixel(xPos, yPos).backColor;
     }
 
     const Grid& Texture::getGrid() const {
