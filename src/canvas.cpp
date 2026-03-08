@@ -8,6 +8,42 @@
 #include "ngph/texture.h"
 #include "ngph/canvas.h"
 
+namespace {
+    static void appendUint(std::string& s, uint32_t n) {
+        char buf[10];
+        int len = 0;
+        if (n == 0) {
+            s.push_back('0');
+            return;
+        }
+        while (n > 0) {
+            buf[len++] = static_cast<char>('0' + n % 10);
+            n /= 10;
+        }
+        for (int i = len - 1; i >= 0; --i) {
+            s.push_back(buf[i]);
+        }
+    }
+
+    static void appendUtf32AsUtf8(std::string& s, char32_t cp) {
+        if (cp <= 0x7F) {
+            s.push_back(static_cast<char>(cp));
+        } else if (cp <= 0x7FF) {
+            s.push_back(static_cast<char>(0xC0 | (cp >> 6)));
+            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        } else if (cp <= 0xFFFF) {
+            s.push_back(static_cast<char>(0xE0 | (cp >> 12)));
+            s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        } else {
+            s.push_back(static_cast<char>(0xF0 | (cp >> 18)));
+            s.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
+            s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        }
+    }
+}
+
 namespace gph {
 
     class Canvas::Impl {
@@ -149,10 +185,9 @@ namespace gph {
         std::string renderedImage;
 
         // reserve space for the string
-        // *54 because pix.toAnsiString() is at max 42 bytes long, and cursor placement is 12 bytes for 9999 pos max (42+12=54)
-        // add y size for each new line ]n
+        // *54 because each pixel ANSI sequence is at max 42 bytes, cursor placement is 12 bytes for 9999 pos max (42+12=54)
         // add 4 for style reset "\033[0m"
-        size_t renderSize = this->getCanvSize() * 54 + this->getYSize() + 4;
+        size_t renderSize = this->getCanvSize() * 54 + 4;
         renderedImage.reserve(renderSize);
 
         // iterate through pixels and find their values
@@ -173,13 +208,28 @@ namespace gph {
                 std::pair<uint32_t, uint32_t> pixPos = this->pImpl->canvas.getPixelPos(i);
 
                 renderedImage.append("\x1b[");
-                renderedImage.append(std::to_string(pixPos.second+1)); // row (y)
-                renderedImage.append(";");
-                renderedImage.append(std::to_string(pixPos.first+1)); // col (x)
-                renderedImage.append("H");
+                appendUint(renderedImage, pixPos.second + 1); // row (y)
+                renderedImage.push_back(';');
+                appendUint(renderedImage, pixPos.first + 1);  // col (x)
+                renderedImage.push_back('H');
 
-                // format pixel and add it to the rendered image
-                renderedImage.append(pix.toAnsiString());
+                renderedImage.append("\033[38;2;");
+                appendUint(renderedImage, pix.textColor.r);
+                renderedImage.push_back(';');
+                appendUint(renderedImage, pix.textColor.g);
+                renderedImage.push_back(';');
+                appendUint(renderedImage, pix.textColor.b);
+                renderedImage.push_back('m');
+
+                renderedImage.append("\033[48;2;");
+                appendUint(renderedImage, pix.backColor.r);
+                renderedImage.push_back(';');
+                appendUint(renderedImage, pix.backColor.g);
+                renderedImage.push_back(';');
+                appendUint(renderedImage, pix.backColor.b);
+                renderedImage.push_back('m');
+
+                appendUtf32AsUtf8(renderedImage, pix.symbol);
             }
         }
 
