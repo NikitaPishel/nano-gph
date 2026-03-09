@@ -104,21 +104,19 @@ void render();
 - `fillRow(yPos, ...)` - Fills a single horizontal row (`yPos`) with the specified pixel.
 - `fillCol(xPos, ...)` - Fills a single vertical column (`xPos`) with the specified pixel.
 - `addBox(xPos, yPos, xSize, ySize, ...)` - Draws a rectangular box starting at `(xPos, yPos)` with the given size and pixel content.
+- `addText(xPos, yPos, text, textColor, backColor)` - Renders a UTF-32 string onto the texture starting at `(xPos, yPos)`. Supports `\n` (moves to the start of the next row), `\t` (advances to the next multiple-of-4 tab stop), and `\r` (moves to the start of the current row). Wide characters (e.g. emoji) occupy two columns. Text that exceeds the texture width wraps to the next row; writing stops when the texture is full.
 - `addTexture(xPos, yPos, newTex)` - Copies another `Texture` (`newTex`) onto the current texture at `(xPos, yPos)`.
 - `fillWithTexture(newTex)` - Tiles the `newTex` across the entire current texture.
-- `build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Use this for permanent textures.
-- `create()` - Finalizes creation but keeps the `Builder` intact (for temporary `Texture` interfaces).
+- `build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Note that the builder itself is an ephemeral object, and can't be used once the texture is built.
 
 #### Texture methods
-- `Texture(Impl* pGrid)` - Internal constructor used by the `Builder` to transfer ownership of the grid implementation.
 - `Texture(int xSize = 1, int ySize = 1)` - Creates a new `Texture` object with the specified dimensions, ready to be used.
 - `~Texture()` - Destructor: Cleans up the internal grid implementation if the `Texture` object owns it.
 - `getXSize() const` - Returns the horizontal size of the texture.
 - `getYSize() const` - Returns the vertical size of the texture.
 - `getGrid() const` - Returns a constant reference to the internal `Grid` object (used mainly by the `Canvas` for rendering).
-- `newBuffer() const` - Creates and returns a new `GridBuffer` object based on the texture's internal grid.
 
-Texture is **muted**, so it can't be edited. You can only read its size, and buffer it into a serialized binary.
+Texture is **immutable**, so it can't be edited after creation. You can only read its size, and buffer it into a serialized binary.
 
 ### TexTable
 To include the texture table class, use header `<ngph/iotex>`
