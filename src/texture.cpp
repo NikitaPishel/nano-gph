@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdint>
 #include <stdexcept>
 #include "ngph/texture.h"
@@ -125,9 +126,64 @@ namespace gph {
         return *this;
     }
 
-    Texture::Builder& Texture::Builder::addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor) {
+    Texture::Builder& Texture::Builder::addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor, TexFlag flag) {
         int xSize = this->getXSize();
         int ySize = this->getYSize();
+
+        if (flag == TexFlag::HORIZONTAL) {
+            // Simulate layout with no wrapping to find the required width
+            int curX = xPos;
+            int maxX = xSize;
+            for (char32_t cp : text) {
+                if (cp == U'\n' || cp == U'\r') {
+                    curX = 0;
+                } else if (cp == U'\t') {
+                    curX = (curX / 4 + 1) * 4;
+                } else {
+                    curX += isWideChar(cp) ? 2 : 1;
+                }
+                maxX = std::max(maxX, curX);
+            }
+            if (maxX > xSize) {
+                this->pImpl->grid.setGridSize(maxX, ySize);
+                xSize = maxX;
+            }
+        } else if (flag == TexFlag::VERTICAL) {
+            // Simulate layout with wrapping at current xSize to find the required height
+            int curX = xPos;
+            int curY = yPos;
+            for (char32_t cp : text) {
+                if (cp == U'\n') {
+                    curX = 0;
+                    curY++;
+                } else if (cp == U'\t') {
+                    curX = (curX / 4 + 1) * 4;
+                    if (curX >= xSize) {
+                        curX = 0;
+                        curY++;
+                    }
+                } else if (cp == U'\r') {
+                    curX = 0;
+                } else {
+                    bool wide = isWideChar(cp);
+                    if (wide && curX + 1 >= xSize) {
+                        curX = 0;
+                        curY++;
+                    }
+                    curX += wide ? 2 : 1;
+                    if (curX >= xSize) {
+                        curX = 0;
+                        curY++;
+                    }
+                }
+            }
+            int neededY = curY + 1;
+            if (neededY > ySize) {
+                this->pImpl->grid.setGridSize(xSize, neededY);
+                ySize = neededY;
+            }
+        }
+
         int curX = xPos;
         int curY = yPos;
 

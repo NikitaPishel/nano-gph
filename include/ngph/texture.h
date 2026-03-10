@@ -2,9 +2,16 @@
 #define CANVAS_TEXTURE_H
 
 #include <ngph/colors.h>
+#include <cstdint>
 #include <string>
 
 namespace gph {
+
+    enum class TexFlag : uint8_t {
+        OFF = 0,
+        HORIZONTAL,
+        VERTICAL
+    };
     class GridBuffer;
     class Grid;
 
@@ -42,7 +49,7 @@ namespace gph {
             Builder& fillCol(int xPos, char32_t symbol, const Rgb textColor, const Rgb backColor);
             Builder& addBox(int xPos, int yPos, int xSize, int ySize, char32_t symbol, const Rgb textColor, const Rgb backColor);
 
-            Builder& addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor);
+            Builder& addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor, TexFlag flag = TexFlag::OFF);
 
             Builder& addTexture(int xPos, int yPos, const Texture& newTex);
             Builder& fillWithTexture(const Texture& newTex);
