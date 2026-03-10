@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 3.14)
-project(ngph)
+project(ngph VERSION 2.3)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(NGPH_IS_TOP_LEVEL ON)
+else()
+    set(NGPH_IS_TOP_LEVEL OFF)
+endif()
+
 # Let user choose between static/shared libs (default: shared)
 option(BUILD_SHARED_LIBS "Build shared libraries (.so) instead of static (.a)" ON)
+option(NGPH_BUILD_DEMO "Build the ngph_demo executable" ${NGPH_IS_TOP_LEVEL})
 
 # Create a library of the core app
 add_library(ngph
@@ -24,9 +31,10 @@ target_include_directories(ngph
         $<INSTALL_INTERFACE:include>
 )
 
-# Main executable
-add_executable(ngph_demo ./src/main.cpp)
-target_link_libraries(ngph_demo PRIVATE ngph)
+if(NGPH_BUILD_DEMO)
+    add_executable(ngph_demo ./src/main.cpp)
+    target_link_libraries(ngph_demo PRIVATE ngph)
+endif()
 
 # Option to enable tests (change cache to OFF by default)
 set(NGPH_BUILD_TESTS OFF CACHE BOOL "")
