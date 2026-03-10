@@ -1,7 +1,6 @@
 #ifndef CANV_GPH_COLORS
 #define CANV_GPH_COLORS
 #include <cstdint>
-#include <sys/ioctl.h>
 
 namespace gph {
     struct Rgb {
