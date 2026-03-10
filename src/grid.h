@@ -2,7 +2,6 @@
 #define CANV_GRID_H
 #include <vector>
 #include <cstdint>
-#include <string>
 #include "ngph/colors.h"
 
 namespace gph {
@@ -22,8 +21,6 @@ namespace gph {
 
             // struct constructor (for standard member list)
             Pixel();
-
-            std::string toAnsiString() const;
         };
 
         // Basic control methods

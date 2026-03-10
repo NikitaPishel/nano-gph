@@ -6,24 +6,6 @@
 
 namespace gph {
 
-    static void appendUtf32AsUtf8(std::string& s, char32_t cp) {
-        if (cp <= 0x7F) {
-            s.push_back(static_cast<char>(cp));
-        } else if (cp <= 0x7FF) {
-            s.push_back(static_cast<char>(0xC0 | (cp >> 6)));
-            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-        } else if (cp <= 0xFFFF) {
-            s.push_back(static_cast<char>(0xE0 | (cp >> 12)));
-            s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
-            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-        } else {
-            s.push_back(static_cast<char>(0xF0 | (cp >> 18)));
-            s.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
-            s.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
-            s.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-        }
-    }
-
     // Serialized Grid constructor
     GridBuffer::GridBuffer(std::vector<char> buffer): buffer(buffer) {
 
@@ -32,31 +14,6 @@ namespace gph {
     // set Pixel instance init values
     Grid::Pixel::Pixel(): symbol(U' '), backColor(Rgb(0, 0, 0)), textColor(Rgb(0, 0, 0)) {
 
-    }
-
-    std::string Grid::Pixel::toAnsiString() const {
-        std::string renderedImage;
-        renderedImage.reserve(42); // preallocate to avoid reallocs
-
-        renderedImage.append("\033[38;2;");
-        renderedImage.append(std::to_string(textColor.r));
-        renderedImage.append(";");
-        renderedImage.append(std::to_string(textColor.g));
-        renderedImage.append(";");
-        renderedImage.append(std::to_string(textColor.b));
-        renderedImage.append("m");
-
-        renderedImage.append("\033[48;2;");
-        renderedImage.append(std::to_string(backColor.r));
-        renderedImage.append(";");
-        renderedImage.append(std::to_string(backColor.g));
-        renderedImage.append(";");
-        renderedImage.append(std::to_string(backColor.b));
-        renderedImage.append("m");
-
-        appendUtf32AsUtf8(renderedImage, symbol);
-
-        return renderedImage;
     }
 
     // set Grid instance init values
