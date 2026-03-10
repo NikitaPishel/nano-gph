@@ -1,11 +1,16 @@
-# Executable for graphics tests
-add_executable(gphTest gphTest.cpp)
-target_include_directories(gphTest PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src
-)
+function(add_gph_test name source)
+    add_executable(${name} ${source})
+    target_include_directories(${name} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+    )
+    target_link_libraries(${name} PRIVATE
+        ngph
+        GTest::gtest_main
+    )
+    add_test(NAME ${name} COMMAND ${name})
+endfunction()
 
-target_link_libraries(gphTest PRIVATE
-    ngph
-    GTest::gtest_main
-)
-add_test(NAME gphTest COMMAND gphTest)
+add_gph_test(gridTest    gridTest.cpp)
+add_gph_test(textureTest textureTest.cpp)
+add_gph_test(iotexTest   iotexTest.cpp)
+add_gph_test(canvasTest  canvasTest.cpp)
