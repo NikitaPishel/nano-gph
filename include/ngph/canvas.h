@@ -30,6 +30,10 @@ namespace gph {
 
         // render and display data
         void render();
+
+    private:
+        void renderFull();
+        void renderDiff();
     };
 };
 #endif

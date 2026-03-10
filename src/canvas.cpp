@@ -54,6 +54,7 @@ namespace gph {
         Grid canvas;
         Grid canvSnap;
         bool dirty = false;
+        bool redraw = true;
 
         Impl(Grid canvas) : canvas(canvas), canvSnap(canvas) {};
     };
@@ -101,6 +102,7 @@ namespace gph {
     void Canvas::setSize(int xSize, int ySize) {
         this->pImpl->canvas.setGridSize(xSize, ySize);
         this->pImpl->canvSnap.setGridSize(xSize, ySize);
+        this->pImpl->redraw = true;
         system("clear");
     }
 
@@ -179,24 +181,69 @@ namespace gph {
         this->iterateTexture(0, 0, xSize, ySize, newTex);
     }
 
-    // Render and display current canvas
     void Canvas::render() {
-        if (!this->pImpl->dirty) return;
+        if (this->pImpl->redraw) {
+            renderFull();
+        } else if (this->pImpl->dirty) {
+            renderDiff();
+        }
+    }
 
+    void Canvas::renderFull() {
         std::string renderedImage;
 
-        // reserve space for the string
-        // *54 because each pixel ANSI sequence is at max 42 bytes, cursor placement is 12 bytes for 9999 pos max (42+12=54)
-        // add 4 for style reset "\033[0m"
         size_t renderSize = this->getCanvSize() * 54 + 4;
         renderedImage.reserve(renderSize);
 
-        // iterate through pixels and find their values
+        for (int i = 0; i < this->getCanvSize(); i++) {
+            const Grid::Pixel& pix = this->pImpl->canvas.getPixelByIndex(i);
+            std::pair<uint32_t, uint32_t> pixPos = this->pImpl->canvas.getPixelPos(i);
+
+            renderedImage.append("\x1b[");
+            appendUint(renderedImage, pixPos.second + 1);
+            renderedImage.push_back(';');
+            appendUint(renderedImage, pixPos.first + 1);
+            renderedImage.push_back('H');
+
+            renderedImage.append("\033[38;2;");
+            appendUint(renderedImage, pix.textColor.r);
+            renderedImage.push_back(';');
+            appendUint(renderedImage, pix.textColor.g);
+            renderedImage.push_back(';');
+            appendUint(renderedImage, pix.textColor.b);
+            renderedImage.push_back('m');
+
+            renderedImage.append("\033[48;2;");
+            appendUint(renderedImage, pix.backColor.r);
+            renderedImage.push_back(';');
+            appendUint(renderedImage, pix.backColor.g);
+            renderedImage.push_back(';');
+            appendUint(renderedImage, pix.backColor.b);
+            renderedImage.push_back('m');
+
+            appendUtf32AsUtf8(renderedImage, pix.symbol);
+        }
+
+        renderedImage.append("\033[0m");
+
+        std::cout << renderedImage;
+        std::cout.flush();
+
+        this->pImpl->canvSnap = this->pImpl->canvas;
+        this->pImpl->dirty = false;
+        this->pImpl->redraw = false;
+    }
+
+    void Canvas::renderDiff() {
+        std::string renderedImage;
+
+        size_t renderSize = this->getCanvSize() * 54 + 4;
+        renderedImage.reserve(renderSize);
+
         for (int i = 0; i < this->getCanvSize(); i++) {
             const Grid::Pixel& pix = this->pImpl->canvas.getPixelByIndex(i);
             const Grid::Pixel& snapPix = this->pImpl->canvSnap.getPixelByIndex(i);
 
-            // check for diff
             if (
                 pix.backColor.r != snapPix.backColor.r ||
                 pix.backColor.g != snapPix.backColor.g ||
@@ -209,9 +256,9 @@ namespace gph {
                 std::pair<uint32_t, uint32_t> pixPos = this->pImpl->canvas.getPixelPos(i);
 
                 renderedImage.append("\x1b[");
-                appendUint(renderedImage, pixPos.second + 1); // row (y)
+                appendUint(renderedImage, pixPos.second + 1);
                 renderedImage.push_back(';');
-                appendUint(renderedImage, pixPos.first + 1);  // col (x)
+                appendUint(renderedImage, pixPos.first + 1);
                 renderedImage.push_back('H');
 
                 renderedImage.append("\033[38;2;");
@@ -234,14 +281,11 @@ namespace gph {
             }
         }
 
-        // style reset
         renderedImage.append("\033[0m");
 
-        // output rendered image to the terminal
         std::cout << renderedImage;
         std::cout.flush();
 
-        // take a snap of the current image
         this->pImpl->canvSnap = this->pImpl->canvas;
         this->pImpl->dirty = false;
     }
