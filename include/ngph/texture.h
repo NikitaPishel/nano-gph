@@ -20,7 +20,7 @@ namespace gph {
     class Texture {
     private:
         class Impl;
-        const Impl* pImpl;
+        Impl* pImpl;
 
         public:
         class Builder {
