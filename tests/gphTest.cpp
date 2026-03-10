@@ -471,6 +471,122 @@ TEST(TextureTest, AddTextFlagVerticalNewlines) {
     EXPECT_EQ(tex.getSymbol(0, 2), U'C');
 }
 
+// create() returns a texture that reads the same data as the builder
+TEST(TextureTest, CreateReadsBuilderData) {
+    Texture::Builder builder(3, 3);
+    builder.fillTexture('X', Rgb(10, 20, 30), Rgb(40, 50, 60));
+
+    Texture tex = builder.create();
+
+    EXPECT_EQ(tex.getXSize(), 3);
+    EXPECT_EQ(tex.getYSize(), 3);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'X');
+    EXPECT_EQ(tex.getFgColor(1, 1).r, 10);
+    EXPECT_EQ(tex.getBgColor(2, 2).b, 60);
+}
+
+// create() leaves the builder usable for further edits
+TEST(TextureTest, CreateBuilderStillUsable) {
+    Texture::Builder builder(3, 3);
+    builder.fillTexture('A', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    {
+        Texture view = builder.create();
+        EXPECT_EQ(view.getSymbol(0, 0), U'A');
+    }
+
+    builder.setPixel(1, 1, 'B', Rgb(1, 1, 1), Rgb(1, 1, 1));
+
+    {
+        Texture view2 = builder.create();
+        EXPECT_EQ(view2.getSymbol(0, 0), U'A');
+        EXPECT_EQ(view2.getSymbol(1, 1), U'B');
+    }
+}
+
+// create() shares data — builder mutations are visible through the texture
+TEST(TextureTest, CreateSharesData) {
+    Texture::Builder builder(2, 2);
+    builder.fillTexture('A', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    Texture view = builder.create();
+    EXPECT_EQ(view.getSymbol(0, 0), U'A');
+
+    builder.setPixel(0, 0, 'Z', Rgb(0, 0, 0), Rgb(0, 0, 0));
+    EXPECT_EQ(view.getSymbol(0, 0), U'Z');
+}
+
+// multiple create() calls all share the same data
+TEST(TextureTest, CreateMultipleCalls) {
+    Texture::Builder builder(2, 2);
+    builder.fillTexture('A', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    Texture view1 = builder.create();
+    Texture view2 = builder.create();
+
+    builder.setPixel(0, 0, 'Q', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    EXPECT_EQ(view1.getSymbol(0, 0), U'Q');
+    EXPECT_EQ(view2.getSymbol(0, 0), U'Q');
+}
+
+// snapshot() returns a texture that matches builder state at call time
+TEST(TextureTest, SnapshotReadsBuilderData) {
+    Texture::Builder builder(3, 3);
+    builder.fillTexture('X', Rgb(10, 20, 30), Rgb(40, 50, 60));
+
+    Texture tex = builder.snapshot();
+
+    EXPECT_EQ(tex.getXSize(), 3);
+    EXPECT_EQ(tex.getYSize(), 3);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'X');
+    EXPECT_EQ(tex.getFgColor(1, 1).r, 10);
+    EXPECT_EQ(tex.getBgColor(2, 2).b, 60);
+}
+
+// snapshot() leaves the builder usable for further edits and build()
+TEST(TextureTest, SnapshotBuilderStillUsable) {
+    Texture::Builder builder(3, 3);
+    builder.fillTexture('A', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    Texture snap = builder.snapshot();
+    EXPECT_EQ(snap.getSymbol(0, 0), U'A');
+
+    builder.setPixel(1, 1, 'B', Rgb(1, 1, 1), Rgb(1, 1, 1));
+    Texture final_tex = builder.build();
+
+    EXPECT_EQ(final_tex.getSymbol(0, 0), U'A');
+    EXPECT_EQ(final_tex.getSymbol(1, 1), U'B');
+}
+
+// snapshot() is independent — builder mutations after snapshot don't affect it
+TEST(TextureTest, SnapshotIsIndependent) {
+    Texture::Builder builder(2, 2);
+    builder.fillTexture('A', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    Texture snap = builder.snapshot();
+    EXPECT_EQ(snap.getSymbol(0, 0), U'A');
+
+    builder.setPixel(0, 0, 'Z', Rgb(0, 0, 0), Rgb(0, 0, 0));
+    EXPECT_EQ(snap.getSymbol(0, 0), U'A');
+}
+
+// multiple snapshots are each independent frozen copies
+TEST(TextureTest, SnapshotMultipleCalls) {
+    Texture::Builder builder(2, 2);
+    builder.fillTexture('A', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    Texture snap1 = builder.snapshot();
+
+    builder.setPixel(0, 0, 'B', Rgb(0, 0, 0), Rgb(0, 0, 0));
+    Texture snap2 = builder.snapshot();
+
+    builder.setPixel(0, 0, 'C', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    EXPECT_EQ(snap1.getSymbol(0, 0), U'A');
+    EXPECT_EQ(snap2.getSymbol(0, 0), U'B');
+}
+
 // test if texture table i/o works correctly with no errors
 TEST(IotexTest, TestTexStore) {
     TexTable table;
