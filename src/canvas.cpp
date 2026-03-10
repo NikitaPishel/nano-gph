@@ -61,7 +61,7 @@ namespace gph {
 
     // Canvas constructor; Makes a unique_ptr of Impl with Grid sized (xSize, ySize)
     Canvas::Canvas(int xSize, int ySize) : pImpl(std::make_unique<Impl>(Grid(xSize, ySize))) {
-        system("clear");
+        std::cout << "\033[2J\033[H";
 
         // hide cursor
         std::cout << "\033[?25l";
@@ -103,7 +103,7 @@ namespace gph {
         this->pImpl->canvas.setGridSize(xSize, ySize);
         this->pImpl->canvSnap.setGridSize(xSize, ySize);
         this->pImpl->redraw = true;
-        system("clear");
+        std::cout << "\033[2J\033[H";
     }
 
     // automatically set the canvas size to the terminal size, if was resized return true
