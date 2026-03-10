@@ -125,14 +125,6 @@ namespace gph {
 
     // add a texture to the canvas
     void Canvas::addTexture(int xPos, int yPos, const Texture& newTex) {
-        if (xPos < 0 || yPos < 0) {
-            throw std::out_of_range("Texture position out of range (below 0)");
-        }
-
-        if (xPos >= this->getXSize() || yPos >= this->getYSize()) {
-            throw std::out_of_range("Texture position out of range (overflow)");
-        }
-
         const Grid& grid = newTex.getGrid();
 
         // iterate through indexes of a grid and copy pixels with a shift
@@ -141,10 +133,11 @@ namespace gph {
 
             std::pair<uint32_t, uint32_t> pixPos = grid.getPixelPos(i);
 
-            uint32_t xShift = pixPos.first + xPos;
-            uint32_t yShift = pixPos.second + yPos;
+            int xShift = static_cast<int>(pixPos.first) + xPos;
+            int yShift = static_cast<int>(pixPos.second) + yPos;
 
-            if (xShift < this->getXSize() && yShift < this->getYSize()) {
+            if (xShift >= 0 && xShift < static_cast<int>(this->getXSize()) &&
+                yShift >= 0 && yShift < static_cast<int>(this->getYSize())) {
                 this->pImpl->canvas.addPixel(xShift, yShift, pix);
                 this->pImpl->dirty = true;
             }
