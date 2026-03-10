@@ -393,6 +393,101 @@ TEST(TextureTest, AddTextUnicode) {
     EXPECT_EQ(grid.getPixel(4, 0).symbol, U'!');
 }
 
+// addText TexFlag::OFF: texture size is unchanged and text is clipped as normal
+TEST(TextureTest, AddTextFlagOff) {
+    Texture tex = Texture::Builder(3, 1)
+        .addText(0, 0, U"ABCDE", Rgb(255,255,255), Rgb(0,0,0), TexFlag::OFF)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 3);
+    EXPECT_EQ(tex.getYSize(), 1);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'A');
+    EXPECT_EQ(tex.getSymbol(2, 0), U'C');
+}
+
+// addText TexFlag::HORIZONTAL: texture grows in x so the text fits without wrapping
+TEST(TextureTest, AddTextFlagHorizontalExpands) {
+    Texture tex = Texture::Builder(3, 1)
+        .addText(0, 0, U"Hello", Rgb(255,255,255), Rgb(0,0,0), TexFlag::HORIZONTAL)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 5);
+    EXPECT_EQ(tex.getYSize(), 1);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'H');
+    EXPECT_EQ(tex.getSymbol(4, 0), U'o');
+}
+
+// addText TexFlag::HORIZONTAL: texture does not shrink if text already fits
+TEST(TextureTest, AddTextFlagHorizontalNoShrink) {
+    Texture tex = Texture::Builder(10, 2)
+        .addText(0, 0, U"Hi", Rgb(255,255,255), Rgb(0,0,0), TexFlag::HORIZONTAL)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 10);
+    EXPECT_EQ(tex.getYSize(), 2);
+}
+
+// addText TexFlag::HORIZONTAL: x grows to the longest natural line across newlines
+TEST(TextureTest, AddTextFlagHorizontalMultiline) {
+    // "Hi\nBye!" — longest line is "Bye!" (4 chars), starting at x=0
+    Texture tex = Texture::Builder(2, 2)
+        .addText(0, 0, U"Hi\nBye!", Rgb(255,255,255), Rgb(0,0,0), TexFlag::HORIZONTAL)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 4);
+    EXPECT_EQ(tex.getSymbol(0, 1), U'B');
+    EXPECT_EQ(tex.getSymbol(3, 1), U'!');
+}
+
+// addText TexFlag::HORIZONTAL: wide (2-cell) characters count as 2 columns
+TEST(TextureTest, AddTextFlagHorizontalWideChar) {
+    // U+1F525 🔥 is 2 cells wide; starting on a 1-wide texture → needs width 2
+    Texture tex = Texture::Builder(1, 1)
+        .addText(0, 0, U"\U0001F525", Rgb(255,255,255), Rgb(0,0,0), TexFlag::HORIZONTAL)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 2);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'\U0001F525');
+}
+
+// addText TexFlag::VERTICAL: texture grows in y so wrapped text fits
+TEST(TextureTest, AddTextFlagVerticalExpands) {
+    // "ABCDE" in a 3-wide, 1-tall texture wraps to 2 rows → y must grow to 2
+    Texture tex = Texture::Builder(3, 1)
+        .addText(0, 0, U"ABCDE", Rgb(255,255,255), Rgb(0,0,0), TexFlag::VERTICAL)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 3);
+    EXPECT_EQ(tex.getYSize(), 2);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'A');
+    EXPECT_EQ(tex.getSymbol(2, 0), U'C');
+    EXPECT_EQ(tex.getSymbol(0, 1), U'D');
+    EXPECT_EQ(tex.getSymbol(1, 1), U'E');
+}
+
+// addText TexFlag::VERTICAL: texture does not shrink if text already fits
+TEST(TextureTest, AddTextFlagVerticalNoShrink) {
+    Texture tex = Texture::Builder(5, 10)
+        .addText(0, 0, U"Hi", Rgb(255,255,255), Rgb(0,0,0), TexFlag::VERTICAL)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 5);
+    EXPECT_EQ(tex.getYSize(), 10);
+}
+
+// addText TexFlag::VERTICAL: explicit newlines beyond current height are also handled
+TEST(TextureTest, AddTextFlagVerticalNewlines) {
+    // "A\nB\nC" on a 5-wide, 1-tall texture → needs 3 rows
+    Texture tex = Texture::Builder(5, 1)
+        .addText(0, 0, U"A\nB\nC", Rgb(255,255,255), Rgb(0,0,0), TexFlag::VERTICAL)
+        .build();
+
+    EXPECT_EQ(tex.getYSize(), 3);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'A');
+    EXPECT_EQ(tex.getSymbol(0, 1), U'B');
+    EXPECT_EQ(tex.getSymbol(0, 2), U'C');
+}
+
 // test if texture table i/o works correctly with no errors
 TEST(IotexTest, TestTexStore) {
     TexTable table;
