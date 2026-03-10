@@ -467,19 +467,48 @@ TEST(CanvasTest, TestCanvResizeErr) {
     EXPECT_THROW(canv.setSize(0, 1), std::invalid_argument);
 }
 
-// test if texture out of range works
-TEST(CanvasTest, TestAddTexErr) {
+// addTexture silently clips out-of-range pixels; it should never throw
+TEST(CanvasTest, TestAddTexNoThrowOnOutOfRange) {
     Canvas canv(5, 5);
 
-    Texture tex = Texture::Builder()
-    .fillTexture(' ', Rgb(255,0,0), Rgb(0,0,0))
-    .build();
+    Texture tex = Texture::Builder(3, 3)
+        .fillTexture('X', Rgb(255, 0, 0), Rgb(0, 0, 0))
+        .build();
 
-    EXPECT_THROW(canv.addTexture(-1, 1, tex), std::out_of_range);
-    EXPECT_THROW(canv.addTexture(1, -1, tex), std::out_of_range);
+    // negative offsets — partially off top-left edge
+    EXPECT_NO_THROW(canv.addTexture(-1, 0, tex));
+    EXPECT_NO_THROW(canv.addTexture(0, -1, tex));
+    EXPECT_NO_THROW(canv.addTexture(-2, -2, tex));
 
-    EXPECT_THROW(canv.addTexture(0, 5, tex), std::out_of_range);
-    EXPECT_THROW(canv.addTexture(0, 5, tex), std::out_of_range);
+    // completely off-screen in all directions
+    EXPECT_NO_THROW(canv.addTexture(-10, 0, tex));
+    EXPECT_NO_THROW(canv.addTexture(0, -10, tex));
+    EXPECT_NO_THROW(canv.addTexture(10, 0, tex));
+    EXPECT_NO_THROW(canv.addTexture(0, 10, tex));
+
+    // overflow — partially beyond the right/bottom edge
+    EXPECT_NO_THROW(canv.addTexture(4, 0, tex));
+    EXPECT_NO_THROW(canv.addTexture(0, 4, tex));
+    EXPECT_NO_THROW(canv.addTexture(5, 0, tex));
+    EXPECT_NO_THROW(canv.addTexture(0, 5, tex));
+}
+
+// partial clip: only the visible portion of the texture should be placed
+TEST(CanvasTest, TestAddTexPartialClip) {
+    Canvas canv(5, 5);
+
+    // 4x4 texture, placed at (-2,-2): only the bottom-right 2x2 should land on the canvas
+    Texture tex = Texture::Builder(4, 4)
+        .fillTexture('P', Rgb(255, 0, 0), Rgb(0, 0, 0))
+        .build();
+
+    EXPECT_NO_THROW(canv.addTexture(-2, -2, tex));
+
+    // placed at (4, 4) on a 5x5 canvas: only pixel (4,4) should be touched
+    EXPECT_NO_THROW(canv.addTexture(4, 4, tex));
+
+    // placed so it overhangs the right and bottom edges
+    EXPECT_NO_THROW(canv.addTexture(3, 3, tex));
 }
 
 // test if setPixel out of range works

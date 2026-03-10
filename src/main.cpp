@@ -37,6 +37,14 @@ int main() {
         .build();
     canv.addTexture(1, 1, labelTex);
 
+    // Demo: texture placed partially off the bottom-right corner — visible portion is clipped in
+    Texture cornerTex = Texture::Builder(10, 4)
+        .fillTexture(' ', Rgb(0, 0, 0), Rgb(180, 60, 200))
+        .addText(0, 0, U"[clipped]", Rgb(255, 255, 255), Rgb(180, 60, 200))
+        .build();
+    canv.addTexture(width - 5, height - 2, cornerTex);
+    canv.addTexture(width/2, -2, cornerTex);
+
     // Alternate emoji then ASCII char across the middle row
     const char32_t emojis[] = {U'🌟', U'🔥', U'💎', U'🚀', U'🎮', U'🌈', U'⚡', U'🎯'};
     const char32_t chars[]  = {U'A',  U'B',  U'C',  U'D',  U'E',  U'F',  U'G',  U'H' };
