@@ -65,6 +65,9 @@ namespace gph {
 
             // create texture and keep ownership (temporary texture interface)
             Texture create();
+
+            // create an independent owned copy of the current state
+            Texture snapshot();
         };
 
         // Constructor

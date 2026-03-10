@@ -310,6 +310,11 @@ namespace gph {
         return Texture(pImpl);
     }
 
+    Texture Texture::Builder::snapshot() {
+        if (!pImpl) throw std::runtime_error("Builder already used!");
+        return Texture(new Impl(pImpl->grid, true));
+    }
+
     Texture::Texture(Impl* pImpl): pImpl(pImpl) {}
 
     Texture::Texture(int xSize, int ySize): pImpl(new Impl(Grid(xSize, ySize), true)) {}
