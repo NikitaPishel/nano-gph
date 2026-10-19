@@ -439,3 +439,74 @@ TEST(TextureTest, AddTextFlagVerticalFillsBackground) {
     EXPECT_EQ(bg.g, 20);
     EXPECT_EQ(bg.b, 30);
 }
+
+TEST(TextureTest, AddTextMovesCursor) {
+    Texture::Builder builder(5, 3);
+
+    std::pair<int, int> cursor{0, 0};
+    builder.addText(cursor, U"Hi\nBye", Rgb(255,255,255), Rgb(0,0,0));
+    EXPECT_EQ(cursor.first, 3);
+    EXPECT_EQ(cursor.second, 1);
+
+    // filling a row exactly keeps the cursor at the row end instead of wrapping early
+    cursor = {0, 2};
+    builder.addText(cursor, U"ABCDE", Rgb(255,255,255), Rgb(0,0,0));
+    EXPECT_EQ(cursor.first, 5);
+    EXPECT_EQ(cursor.second, 2);
+}
+
+TEST(TextureTest, AddTextNoBlankLineAfterFullRow) {
+    Texture tex = Texture::Builder(3, 2)
+        .addText(0, 0, U"ABC\nD", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    EXPECT_EQ(tex.getSymbol(0, 1), U'D');
+}
+
+// chaining addText calls through a shared cursor must render the same as one call
+static void expectSameTexture(const Texture& a, const Texture& b) {
+    ASSERT_EQ(a.getXSize(), b.getXSize());
+    ASSERT_EQ(a.getYSize(), b.getYSize());
+    for (int y = 0; y < a.getYSize(); y++) {
+        for (int x = 0; x < a.getXSize(); x++) {
+            EXPECT_EQ(a.getSymbol(x, y), b.getSymbol(x, y)) << "at " << x << "," << y;
+        }
+    }
+}
+
+TEST(TextureTest, AddTextChainedMatchesSingleCall) {
+    const std::u32string full = U"Lorem ipsum dolor sit amet\tconsectetur \U0001F525adipiscing\nelit.";
+
+    for (TexFlag flag : {TexFlag::OFF, TexFlag::HORIZONTAL, TexFlag::VERTICAL}) {
+        for (size_t split = 0; split <= full.size(); split++) {
+            Texture single = Texture::Builder(16, 4)
+                .addText(0, 0, full, Rgb(255,255,255), Rgb(0,0,0), flag)
+                .build();
+
+            std::pair<int, int> cursor{0, 0};
+            Texture chained = Texture::Builder(16, 4)
+                .addText(cursor, full.substr(0, split), Rgb(255,255,255), Rgb(0,0,0), flag)
+                .addText(cursor, full.substr(split), Rgb(255,0,0), Rgb(0,0,0), flag)
+                .build();
+
+            expectSameTexture(single, chained);
+        }
+    }
+}
+
+TEST(TextureTest, AddTextChainedKeepsColors) {
+    std::pair<int, int> cursor{0, 0};
+    Texture tex = Texture::Builder(17, 4)
+        .addText(cursor, U"Lorem ipsum dolor sit amet consectetur ", Rgb(255,255,255), Rgb(0,0,0))
+        .addText(cursor, U"adipiscing", Rgb(255,0,0), Rgb(0,0,0))
+        .addText(cursor, U" elit.", Rgb(255,255,255), Rgb(0,0,0))
+        .build();
+
+    // "Lorem ipsum dolor" fills row 0, " sit amet consect" row 1, "etur " starts row 2
+    EXPECT_EQ(tex.getSymbol(5, 2), U'a');
+    EXPECT_EQ(tex.getFgColor(5, 2).r, 255);
+    EXPECT_EQ(tex.getFgColor(5, 2).g, 0);
+    EXPECT_EQ(tex.getSymbol(15, 2), U' ');
+    EXPECT_EQ(tex.getFgColor(15, 2).g, 255);
+    EXPECT_EQ(tex.getSymbol(0, 3), U'l');
+}
