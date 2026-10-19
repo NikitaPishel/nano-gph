@@ -412,3 +412,30 @@ TEST(TextureTest, SnapshotMultipleCalls) {
 }
 
 }
+
+TEST(TextureTest, AddTextFlagHorizontalFillsBackground) {
+    Rgb back(10, 20, 30);
+    Texture tex = Texture::Builder(2, 2)
+        .addText(0, 0, U"Hello", Rgb(255,255,255), back, TexFlag::HORIZONTAL)
+        .build();
+
+    // cells added by expansion that the text didn't cover use the text background
+    EXPECT_EQ(tex.getSymbol(4, 1), U' ');
+    Rgb bg = tex.getBgColor(4, 1);
+    EXPECT_EQ(bg.r, 10);
+    EXPECT_EQ(bg.g, 20);
+    EXPECT_EQ(bg.b, 30);
+}
+
+TEST(TextureTest, AddTextFlagVerticalFillsBackground) {
+    Rgb back(10, 20, 30);
+    Texture tex = Texture::Builder(3, 1)
+        .addText(0, 0, U"ABCD", Rgb(255,255,255), back, TexFlag::VERTICAL)
+        .build();
+
+    EXPECT_EQ(tex.getSymbol(2, 1), U' ');
+    Rgb bg = tex.getBgColor(2, 1);
+    EXPECT_EQ(bg.r, 10);
+    EXPECT_EQ(bg.g, 20);
+    EXPECT_EQ(bg.b, 30);
+}
