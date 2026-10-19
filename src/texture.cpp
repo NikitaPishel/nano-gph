@@ -146,6 +146,9 @@ namespace gph {
             }
             if (maxX > xSize) {
                 this->pImpl->grid.setGridSize(maxX, ySize);
+
+                // fill the newly added columns with the text background
+                this->addBox(xSize, 0, maxX - xSize, ySize, U' ', backColor, backColor);
                 xSize = maxX;
             }
         } else if (flag == TexFlag::VERTICAL) {
@@ -180,6 +183,9 @@ namespace gph {
             int neededY = curY + 1;
             if (neededY > ySize) {
                 this->pImpl->grid.setGridSize(xSize, neededY);
+
+                // fill the newly added rows with the text background
+                this->addBox(0, ySize, xSize, neededY - ySize, U' ', backColor, backColor);
                 ySize = neededY;
             }
         }
