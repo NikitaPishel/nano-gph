@@ -4,6 +4,7 @@
 #include <ngph/colors.h>
 #include <cstdint>
 #include <string>
+#include <utility>
 
 namespace gph {
 
@@ -50,6 +51,9 @@ namespace gph {
             Builder& addBox(int xPos, int yPos, int xSize, int ySize, char32_t symbol, const Rgb textColor, const Rgb backColor);
 
             Builder& addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor, TexFlag flag = TexFlag::OFF);
+
+            // starts at cursor {x, y} and moves it to where the text ended. Reuse the cursor in the next addText to continue the text (e.g. with different colors)
+            Builder& addText(std::pair<int, int>& cursor, const std::u32string& text, const Rgb textColor, const Rgb backColor, TexFlag flag = TexFlag::OFF);
 
             Builder& addTexture(int xPos, int yPos, const Texture& newTex);
             Builder& fillWithTexture(const Texture& newTex);

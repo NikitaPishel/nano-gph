@@ -127,6 +127,14 @@ namespace gph {
     }
 
     Texture::Builder& Texture::Builder::addText(int xPos, int yPos, const std::u32string& text, const Rgb textColor, const Rgb backColor, TexFlag flag) {
+        std::pair<int, int> cursor{xPos, yPos};
+        return this->addText(cursor, text, textColor, backColor, flag);
+    }
+
+    // starts at cursor and moves it to where the text ended, so another addText can continue from it
+    Texture::Builder& Texture::Builder::addText(std::pair<int, int>& cursor, const std::u32string& text, const Rgb textColor, const Rgb backColor, TexFlag flag) {
+        int xPos = cursor.first;
+        int yPos = cursor.second;
         int xSize = this->getXSize();
         int ySize = this->getYSize();
 
@@ -161,23 +169,15 @@ namespace gph {
                     curY++;
                 } else if (cp == U'\t') {
                     curX = (curX / 4 + 1) * 4;
-                    if (curX >= xSize) {
-                        curX = 0;
-                        curY++;
-                    }
                 } else if (cp == U'\r') {
                     curX = 0;
                 } else {
-                    bool wide = isWideChar(cp);
-                    if (wide && curX + 1 >= xSize) {
+                    int charWidth = isWideChar(cp) ? 2 : 1;
+                    if (curX > 0 && curX + charWidth > xSize) {
                         curX = 0;
                         curY++;
                     }
-                    curX += wide ? 2 : 1;
-                    if (curX >= xSize) {
-                        curX = 0;
-                        curY++;
-                    }
+                    curX += charWidth;
                 }
             }
             int neededY = curY + 1;
@@ -194,28 +194,24 @@ namespace gph {
         int curY = yPos;
 
         for (char32_t cp : text) {
-            if (curY >= ySize) break;
-
             if (cp == U'\n') {
                 curX = 0;
                 curY++;
             } else if (cp == U'\t') {
                 curX = (curX / 4 + 1) * 4;
-                if (curX >= xSize) {
-                    curX = 0;
-                    curY++;
-                }
             } else if (cp == U'\r') {
                 curX = 0;
             } else {
                 bool wide = isWideChar(cp);
+                int charWidth = wide ? 2 : 1;
 
-                // wrap a wide char that would start at the last column to the next row
-                if (wide && curX + 1 >= xSize) {
+                // wrap lazily, only when the next char doesn't fit, so the returned
+                // cursor stays on the current row and chained calls render the same
+                if (curX > 0 && curX + charWidth > xSize) {
                     curX = 0;
                     curY++;
-                    if (curY >= ySize) break;
                 }
+                if (curY >= ySize) break;
 
                 this->pImpl->grid.setPixel(curX, curY, cp, textColor, backColor);
 
@@ -224,13 +220,11 @@ namespace gph {
                     this->pImpl->grid.setPixel(curX + 1, curY, U' ', backColor, backColor);
                 }
 
-                curX += wide ? 2 : 1;
-                if (curX >= xSize) {
-                    curX = 0;
-                    curY++;
-                }
+                curX += charWidth;
             }
         }
+
+        cursor = {curX, curY};
 
         return *this;
     }
