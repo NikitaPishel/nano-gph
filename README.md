@@ -120,6 +120,15 @@ enum class TexFlag : uint8_t {
 - `fillCol(xPos, ...)` - Fills a single vertical column (`xPos`) with the specified pixel.
 - `addBox(xPos, yPos, xSize, ySize, ...)` - Draws a rectangular box starting at `(xPos, yPos)` with the given size and pixel content.
 - `addText(xPos, yPos, text, textColor, backColor, flag = TexFlag::OFF)` - Renders a UTF-32 string onto the texture starting at `(xPos, yPos)`. Supports `\n` (moves to the start of the next row), `\t` (advances to the next multiple-of-4 tab stop), and `\r` (moves to the start of the current row). Wide characters (e.g. emoji) occupy two columns. Text that exceeds the texture width wraps to the next row; writing stops when the texture is full. When `flag` is `HORIZONTAL`, the texture auto-expands its width to fit the text. When `flag` is `VERTICAL`, the texture auto-expands its height to accommodate wrapped lines.
+- `addText(cursor, text, textColor, backColor, flag = TexFlag::OFF)` - Same as above, but starts at `cursor` (`std::pair<int, int>&`) and moves it to where the text ended. Reusing the same cursor in the next `addText` continues the text exactly as if it were a single call, which lets you chain differently colored segments:
+  ```cpp
+  std::pair<int, int> cursor{0, 0};
+  Texture tex = Texture::Builder(17, 4)
+      .addText(cursor, U"Lorem ipsum ", Rgb(255, 255, 255), Rgb(0, 0, 0))
+      .addText(cursor, U"dolor", Rgb(255, 0, 0), Rgb(0, 0, 0))
+      .addText(cursor, U" sit amet.", Rgb(255, 255, 255), Rgb(0, 0, 0))
+      .build();
+  ```
 - `addTexture(xPos, yPos, newTex)` - Copies another `Texture` (`newTex`) onto the current texture at `(xPos, yPos)`.
 - `fillWithTexture(newTex)` - Tiles the `newTex` across the entire current texture.
 - `build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Note that the builder itself is an ephemeral object, and can't be used once the texture is built.
