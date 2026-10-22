@@ -74,7 +74,7 @@ bool updateSize();
 - `getYSize()` - returns vetical size of a canvas
 - `getCanvSize()` - returns amount of pixels/formatted characters in a canvas
 - `setSize(xSize, ySize)` - sets size of a canvas to the provided dimenions
-- `updateSize()` - automatically stretches canvas to fill the entire terminal. When canvas was resized, returns true
+- `updateSize()` - automatically stretches canvas to fill the entire terminal. When canvas was resized, returns true. Throws `std::runtime_error` if the terminal size can't be read
 
 #### editing canvas and displaying image:
 ```cpp
