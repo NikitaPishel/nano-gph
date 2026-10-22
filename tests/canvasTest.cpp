@@ -3,6 +3,8 @@
 #include "ngph/colors.h"
 #include <ngph/texture.h>
 #include <ngph/canvas.h>
+#include <stdexcept>
+#include <unistd.h>
 
 using namespace gph;
 
@@ -87,7 +89,9 @@ TEST(CanvasTest, TestNormalWork) {
 
     EXPECT_NO_THROW(canv.addTexture(1, 1, tex));
     EXPECT_NO_THROW(canv.setPixel(4, 4, 'a', Rgb(255,0,0), Rgb(0,0,255)));
-    EXPECT_NO_THROW(canv.updateSize());
+    // without a terminal the size can't be read
+    if (isatty(STDOUT_FILENO)) EXPECT_NO_THROW(canv.updateSize());
+    else EXPECT_THROW(canv.updateSize(), std::runtime_error);
     EXPECT_NO_THROW(canv.setSize(8, 8));
     EXPECT_NO_THROW(canv.iterateTexture(1, 1, 2, 1, tex));
     EXPECT_NO_THROW(canv.fillWithTexture(tex));
