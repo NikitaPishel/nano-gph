@@ -76,6 +76,19 @@ TEST(GridTest, GridResizeIndexation) {
     EXPECT_EQ(newPix.symbol, 'b');
 }
 
+TEST(GridTest, GridResizeMixedDirections) {
+    // width and height change in opposite directions, both ways
+    Grid grid(80, 24);
+    grid.setPixel(40, 20, 'a', Rgb(0, 0, 0), Rgb(0, 0, 0));
+
+    grid.setGridSize(50, 30);
+    EXPECT_EQ(grid.getPixel(40, 20).symbol, 'a');
+    EXPECT_EQ(grid.getGridSize(), 50u * 30u);
+
+    grid.setGridSize(100, 10);
+    EXPECT_EQ(grid.getGridSize(), 100u * 10u);
+}
+
 TEST(GridTest, TestGridBuffer) {
     Grid grid(2, 2);
     grid.setPixel(0, 0, 'a', Rgb(0, 0, 0), Rgb(0, 0, 0));
