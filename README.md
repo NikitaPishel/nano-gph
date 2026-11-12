@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./readmeFiles/logo.svg" width="160" alt="Nano-Gph logo">
+  <img src="./readmeFiles/wordmark.svg" width="420" alt="Nano-Gph logo">
 </p>
 
 # **Nano-Gph**
