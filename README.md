@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./readmeFiles/logo.svg" width="160" alt="Nano-Gph logo">
+</p>
+
 # **Nano-Gph**
 
 > [Intro](#intro)
