@@ -230,12 +230,11 @@ namespace gph {
     }
 
     Texture::Builder& Texture::Builder::addTexture(int xPos, int yPos, const Texture& newTex) {
-        if (xPos < 0 || yPos < 0) {
-            throw std::out_of_range("Texture position out of range (below 0)");
-        }
-
-        if (xPos >= this->getXSize() || yPos >= this->getYSize()) {
-            throw std::out_of_range("Texture position out of range (overflow)");
+        // partially visible textures are clipped, but a texture that lies
+        // entirely outside would draw nothing, so treat it as an error
+        if (xPos >= this->getXSize() || yPos >= this->getYSize() ||
+            xPos + newTex.getXSize() <= 0 || yPos + newTex.getYSize() <= 0) {
+            throw std::out_of_range("Texture is entirely outside the bounds");
         }
 
         const Grid& grid = newTex.getGrid();
@@ -246,10 +245,11 @@ namespace gph {
 
             std::pair<uint32_t, uint32_t> pixPos = grid.getPixelPos(i);
 
-            uint32_t xShift = pixPos.first + xPos;
-            uint32_t yShift = pixPos.second + yPos;
+            int xShift = static_cast<int>(pixPos.first) + xPos;
+            int yShift = static_cast<int>(pixPos.second) + yPos;
 
-            if (xShift < this->getXSize() && yShift < this->getYSize()) {
+            if (xShift >= 0 && xShift < static_cast<int>(this->getXSize()) &&
+                yShift >= 0 && yShift < static_cast<int>(this->getYSize())) {
                 this->pImpl->grid.addPixel(xShift, yShift, pix);
             }
         }

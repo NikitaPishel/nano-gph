@@ -127,6 +127,13 @@ namespace gph {
 
     // add a texture to the canvas
     void Canvas::addTexture(int xPos, int yPos, const Texture& newTex) {
+        // partially visible textures are clipped, but a texture that lies
+        // entirely outside would draw nothing, so treat it as an error
+        if (xPos >= static_cast<int>(this->getXSize()) || yPos >= static_cast<int>(this->getYSize()) ||
+            xPos + newTex.getXSize() <= 0 || yPos + newTex.getYSize() <= 0) {
+            throw std::out_of_range("Texture is entirely outside the bounds");
+        }
+
         const Grid& grid = newTex.getGrid();
 
         // iterate through indexes of a grid and copy pixels with a shift
