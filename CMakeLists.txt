@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(ngph VERSION 2.3)
+project(ngph VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
