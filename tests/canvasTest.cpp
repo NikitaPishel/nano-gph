@@ -32,26 +32,29 @@ TEST(CanvasTest, TestCanvResizeErr) {
     EXPECT_THROW(canv.setSize(0, 1), std::invalid_argument);
 }
 
-TEST(CanvasTest, TestAddTexNoThrowOnOutOfRange) {
+TEST(CanvasTest, TestAddTexOutOfRange) {
     Canvas canv(5, 5);
 
     Texture tex = Texture::Builder(3, 3)
         .fillTexture('X', Rgb(255, 0, 0), Rgb(0, 0, 0))
         .build();
 
+    // partially visible: clipped, no throw
     EXPECT_NO_THROW(canv.addTexture(-1, 0, tex));
     EXPECT_NO_THROW(canv.addTexture(0, -1, tex));
     EXPECT_NO_THROW(canv.addTexture(-2, -2, tex));
-
-    EXPECT_NO_THROW(canv.addTexture(-10, 0, tex));
-    EXPECT_NO_THROW(canv.addTexture(0, -10, tex));
-    EXPECT_NO_THROW(canv.addTexture(10, 0, tex));
-    EXPECT_NO_THROW(canv.addTexture(0, 10, tex));
-
     EXPECT_NO_THROW(canv.addTexture(4, 0, tex));
     EXPECT_NO_THROW(canv.addTexture(0, 4, tex));
-    EXPECT_NO_THROW(canv.addTexture(5, 0, tex));
-    EXPECT_NO_THROW(canv.addTexture(0, 5, tex));
+
+    // entirely outside: throws
+    EXPECT_THROW(canv.addTexture(-3, 0, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(0, -3, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(-10, 0, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(0, -10, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(5, 0, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(0, 5, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(10, 0, tex), std::out_of_range);
+    EXPECT_THROW(canv.addTexture(0, 10, tex), std::out_of_range);
 }
 
 TEST(CanvasTest, TestAddTexPartialClip) {

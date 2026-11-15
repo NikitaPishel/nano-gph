@@ -94,6 +94,38 @@ TEST(TextureTest, addBoxAll) {
     EXPECT_THROW(builder.addBox(0, 0, 10, 0, 'a', Rgb(255,255,255), Rgb(0,0,0)), std::invalid_argument);
 }
 
+TEST(TextureTest, AddTextureClipsAndThrows) {
+    Texture src = Texture::Builder(3, 3)
+        .setPixel(0, 0, U'A', Rgb(0,0,0), Rgb(0,0,0))
+        .setPixel(2, 2, U'B', Rgb(0,0,0), Rgb(0,0,0))
+        .build();
+
+    // negative position: only the bottom-right pixel lands inside
+    Texture neg = Texture::Builder(3, 3)
+        .addTexture(-2, -2, src)
+        .build();
+    EXPECT_EQ(neg.getSymbol(0, 0), U'B');
+
+    // overflow past the far edge: only the top-left pixel lands inside
+    Texture over = Texture::Builder(3, 3)
+        .addTexture(2, 2, src)
+        .build();
+    EXPECT_EQ(over.getSymbol(2, 2), U'A');
+
+    Texture::Builder builder(3, 3);
+    // partially visible: last row/column of src touches the edge
+    EXPECT_NO_THROW(builder.addTexture(-2, 0, src));
+    EXPECT_NO_THROW(builder.addTexture(0, -2, src));
+    EXPECT_NO_THROW(builder.addTexture(2, 2, src));
+
+    // entirely outside on each side
+    EXPECT_THROW(builder.addTexture(3, 0, src), std::out_of_range);
+    EXPECT_THROW(builder.addTexture(0, 3, src), std::out_of_range);
+    EXPECT_THROW(builder.addTexture(-3, 0, src), std::out_of_range);
+    EXPECT_THROW(builder.addTexture(0, -3, src), std::out_of_range);
+    EXPECT_THROW(builder.addTexture(-10, -10, src), std::out_of_range);
+}
+
 TEST(TextureTest, GetSymbol) {
     Texture tex = Texture::Builder(3, 3)
         .setPixel(1, 2, U'Z', Rgb(0,0,0), Rgb(0,0,0))
