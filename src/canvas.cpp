@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <sys/ioctl.h>
@@ -136,21 +137,20 @@ namespace gph {
 
         const Grid& grid = newTex.getGrid();
 
-        // iterate through indexes of a grid and copy pixels with a shift
-        for (int i = 0; i < grid.getGridSize(); i++) {
-            const Grid::Pixel pix = grid.getPixelByIndex(i);
+        // visible range in source texture coordinates (non-empty, guaranteed by the check above)
+        const int xStart = std::max(0, -xPos);
+        const int yStart = std::max(0, -yPos);
+        const int xEnd = std::min(newTex.getXSize(), static_cast<int>(this->getXSize()) - xPos);
+        const int yEnd = std::min(newTex.getYSize(), static_cast<int>(this->getYSize()) - yPos);
 
-            std::pair<uint32_t, uint32_t> pixPos = grid.getPixelPos(i);
-
-            int xShift = static_cast<int>(pixPos.first) + xPos;
-            int yShift = static_cast<int>(pixPos.second) + yPos;
-
-            if (xShift >= 0 && xShift < static_cast<int>(this->getXSize()) &&
-                yShift >= 0 && yShift < static_cast<int>(this->getYSize())) {
-                this->pImpl->canvas.addPixel(xShift, yShift, pix);
-                this->pImpl->dirty = true;
+        // copy only the visible pixels, row by row
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                this->pImpl->canvas.addPixel(x + xPos, y + yPos, grid.getPixel(x, y));
             }
         }
+
+        this->pImpl->dirty = true;
     }
 
     // add a texture to the canvas
