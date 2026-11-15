@@ -58,12 +58,12 @@ FetchContent_MakeAvailable(ngph)
 Namespace used by this library is `gph`. When building a large project, consider that to avoid integration issues.
 Library features main class `Canvas` that handles input into it via textures, accordingly are used as a `Texture` class
 It uses `(0, 0)` position as origin (top-left corner)
-All method parameters can be found it API (headers)
+All method parameters can be found in API (headers)
 
-All interfaces is encapsulated, so there should not appear any issues with accidental triggering of non-API logic
+All interfaces are encapsulated, so there should not appear any issues with accidental triggering of non-API logic
 
 ### Canvas
-To include canvas, use header `<ngph/canvas>`
+To include canvas, use header `<ngph/canvas.h>`
 
 #### Size i/o:
 ```cpp
@@ -75,9 +75,9 @@ bool updateSize();
 ```
 
 - `getXSize()` - returns horizontal size of a canvas
-- `getYSize()` - returns vetical size of a canvas
+- `getYSize()` - returns vertical size of a canvas
 - `getCanvSize()` - returns amount of pixels/formatted characters in a canvas
-- `setSize(xSize, ySize)` - sets size of a canvas to the provided dimenions
+- `setSize(xSize, ySize)` - sets size of a canvas to the provided dimensions
 - `updateSize()` - automatically stretches canvas to fill the entire terminal. When canvas was resized, returns true. Throws `std::runtime_error` if the terminal size can't be read
 
 #### editing canvas and displaying image:
@@ -133,7 +133,7 @@ enum class TexFlag : uint8_t {
       .addText(cursor, U" sit amet.", Rgb(255, 255, 255), Rgb(0, 0, 0))
       .build();
   ```
-- `addTexture(xPos, yPos, newTex)` - Copies another `Texture` (`newTex`) onto the current texture at `(xPos, yPos)`.
+- `addTexture(xPos, yPos, newTex)` - Copies another `Texture` (`newTex`) onto the current texture at `(xPos, yPos)`. Pixels that fall outside the texture boundaries are clipped (negative positions are allowed). Throws `std::out_of_range` if `xPos` or `yPos` is greater than or equal to the texture size, since nothing would be drawn.
 - `fillWithTexture(newTex)` - Tiles the `newTex` across the entire current texture.
 - `build()` - Finalizes the creation, consumes the `Builder`, and returns the immutable `Texture` object. Note that the builder itself is an ephemeral object, and can't be used once the texture is built.
 - `snapshot()` - Creates an independent owned copy of the texture from the current builder state without consuming the `Builder`. Unlike `build()`, the builder remains usable after calling `snapshot()`.
@@ -148,7 +148,7 @@ enum class TexFlag : uint8_t {
 Texture is **immutable**, so it can't be edited after creation. You can only read its size, and buffer it into a serialized binary.
 
 ### TexTable
-To include the texture table class, use header `<ngph/iotex>`
+To include the texture table class, use header `<ngph/iotex.h>`
 
 The `TexTable` class is an utility for managing and persistently storing a collection of `Texture` objects. It allows you to load and save textures to a file and retrieve them by name.
 
@@ -174,7 +174,7 @@ void saveTable(const std::string& path);
 - `saveTable(const std::string& path)` - Serializes the current textures in the table and writes the binary data to the file specified by `path`.
 
 ### Colors
-To include the color utility, use header `<ngph/colors>`
+To include the color utility, use header `<ngph/colors.h>`
 
 The `Rgb` struct is used to represent colors throughout the library. It is passed directly to pixel-setting methods on both `Canvas` and `Texture::Builder`.
 
