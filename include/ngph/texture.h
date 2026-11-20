@@ -61,6 +61,9 @@ namespace gph {
             // change size of a texture
             Builder& setSize(int xSize, int ySize);
 
+            // cut the texture down to the given rectangle; throws unless it lies fully inside
+            Builder& strip(int xPos, int yPos, int xSize, int ySize);
+
             // set a specific grid to a texture
             Builder& setGrid(Grid grid);
 

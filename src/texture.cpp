@@ -285,6 +285,27 @@ namespace gph {
         return *this;
     }
 
+    Texture::Builder& Texture::Builder::strip(int xPos, int yPos, int xSize, int ySize) {
+        if (xPos < 0 || yPos < 0 || xSize < 1 || ySize < 1 ||
+            xPos + xSize > this->getXSize() || yPos + ySize > this->getYSize()) {
+            throw std::out_of_range("Strip rectangle is outside the texture bounds");
+        }
+
+        const Grid& oldGrid = this->pImpl->grid;
+        Grid newGrid(xSize, ySize);
+
+        for (int y = 0; y < ySize; y++) {
+            for (int x = 0; x < xSize; x++) {
+                newGrid.addPixel(x, y, oldGrid.getPixel(x + xPos, y + yPos));
+            }
+        }
+
+        this->pImpl->grid = std::move(newGrid);
+
+        // pointer for chain method calls
+        return *this;
+    }
+
     Texture::Builder& Texture::Builder::setGrid(Grid grid) {
         this->pImpl->grid = grid;
 
