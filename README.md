@@ -117,6 +117,7 @@ enum class TexFlag : uint8_t {
 - `getXSize()` - Returns the current horizontal dimension of the texture being built.
 - `getYSize()` - Returns the current vertical dimension of the texture being built.
 - `setSize(xSize, ySize)` - Changes the dimensions of the texture being built.
+- `strip(xPos, yPos, xSize, ySize)` - Cuts the texture down to the rectangle starting at `(xPos, yPos)` with the given size; pixel `(xPos, yPos)` becomes `(0, 0)`. Throws `std::out_of_range` unless the rectangle lies fully inside the texture.
 - `setPixel(xPos, yPos, symbol, textColor, backColor)` - Sets a single pixel at a specific coordinate using `Rgb` colors.
 - `setPixelByGridIndex(index, symbol, textColor, backColor)` - Same as `setPixel`, but uses a raw grid index instead of coordinates.
 - `fillTexture(...)` - Fills the entire texture with the same symbol and colors.
