@@ -542,3 +542,39 @@ TEST(TextureTest, AddTextChainedKeepsColors) {
     EXPECT_EQ(tex.getFgColor(15, 2).g, 255);
     EXPECT_EQ(tex.getSymbol(0, 3), U'l');
 }
+
+TEST(TextureTest, StripKeepsRectangle) {
+    Texture::Builder builder(3, 4);
+    for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < 3; x++) {
+            builder.setPixel(x, y, U'a' + y * 3 + x, Rgb(x, y, 0), Rgb(0, 0, 0));
+        }
+    }
+    Texture tex = builder.strip(1, 2, 2, 2).build();
+
+    EXPECT_EQ(tex.getXSize(), 2);
+    EXPECT_EQ(tex.getYSize(), 2);
+    EXPECT_EQ(tex.getSymbol(0, 0), U'h');
+    EXPECT_EQ(tex.getSymbol(1, 1), U'l');
+    EXPECT_EQ(tex.getFgColor(0, 0).r, 1);
+    EXPECT_EQ(tex.getFgColor(0, 0).g, 2);
+}
+
+TEST(TextureTest, StripWholeTextureIsNoop) {
+    Texture tex = Texture::Builder(2, 2)
+        .fillTexture(U'A', Rgb(0, 0, 0), Rgb(0, 0, 0))
+        .strip(0, 0, 2, 2)
+        .build();
+
+    EXPECT_EQ(tex.getXSize(), 2);
+    EXPECT_EQ(tex.getYSize(), 2);
+    EXPECT_EQ(tex.getSymbol(1, 1), U'A');
+}
+
+TEST(TextureTest, StripOutOfBoundsThrows) {
+    Texture::Builder builder(3, 3);
+    EXPECT_THROW(builder.strip(-1, 0, 2, 2), std::out_of_range);
+    EXPECT_THROW(builder.strip(0, 0, 4, 1), std::out_of_range);
+    EXPECT_THROW(builder.strip(2, 2, 2, 1), std::out_of_range);
+    EXPECT_THROW(builder.strip(0, 0, 0, 1), std::out_of_range);
+}
